@@ -1771,72 +1771,718 @@ Protocol Buffers（ProtocolBuffer/ protobuf）是Google开发的一套对数据�
 
 ### 熟练掌握Makefile语法
 
+Makefile的语法比较多，核心的语法包括Makefile规则语法、伪目标、变量赋值、条件语句和Makefile常用函数等等。
+
+[《跟我一起写 Makefile》 (PDF 重制版)](https://github.com/seisman/how-to-write-makefile)
+
 ### 规划Makefile要实现的功能
 
 ### 设计合理的Makefile结构
 
+对于大型项目来说，**建议采用分层的设计方法，根目录下的Makefile聚合所有的Makefile命令，具体实现则按功能分类，放在另外的Makefile中**。
+
+经常会在Makefile命令中集成shell脚本，**可以将复杂的shell命令封装在shell脚本中，供Makefile直接调用，而一些简单的命令则可以直接集成在Makefile中**。
+
+![](images/image-20240719190954540.png)
+
 ### 掌握Makefile编写技巧
 
-技巧1：善用通配符和自动变量
-技巧2：善用函数
-技巧3：依赖需要用到的工具
-技巧4：把常用功能放在/Makefile中，不常用的放在分类Makefile中
-技巧5：编写可扩展的Makefile
-技巧6：将所有输出存放在一个目录下，方便清理和查找
-技巧7：使用带层级的命名方式
-技巧8：做好目标拆分
-技巧9：设置OPTIONS
-技巧10：定义环境变量
-技巧11：自己调用自己
+#### 技巧1：善用通配符和自动变量
+
+#### 技巧2：善用函数
+
+#### 技巧3：依赖需要用到的工具
+
+#### 技巧4：把常用功能放在/Makefile中，不常用的放在分类Makefile中
+
+#### 技巧5：编写可扩展的Makefile
+
+#### 技巧6：将所有输出存放在一个目录下，方便清理和查找
+
+#### 技巧7：使用带层级的命名方式
+
+#### 技巧8：做好目标拆分
+
+#### 技巧9：设置OPTIONS
+
+#### 技巧10：定义环境变量
+
+#### 技巧11：自己调用自己
 
 
 
-15 研发流程实战：IAM项目是如何进行研发流程管理的？
+## 15 研发流程实战：IAM项目是如何进行研发流程管理的？
 
-16 代码检查：如何进行静态代码检查？
+### 开发阶段
 
-17 API 文档：如何生成 Swagger API 文档 ？
+#### 代码开发
 
-18 错误处理（上）：如何设计一套科学的错误码？
+![](images/image-20240719191456536.png)
 
-19 错误处理（下）：如何设计错误包？
+#### 代码提交
 
-20 日志处理（上）：如何设计日志包并记录日志？
+### 测试阶段
 
-21 日志处理（下）：手把手教你从 0 编写一个日志包
+### IAM项目的Makefile项目管理技巧
 
-22 应用构建三剑客：Pflag、Viper、Cobra 核心功能介绍
+help自动解析
+Options中指定变量值
+自动生成CHANGELOG
+自动生成版本号
+保持行为一致
 
-23 应用构建实战：如何构建一个优秀的企业应用框架？
+
+## 16 代码检查：如何进行静态代码检查？
+
+Go项目开发中需要对Go代码做静态代码检查。虽然Go命令提供了`go vet`和`go tool vet`，但是它们检查的内容还不够全面。
+
+最受欢迎的静态代码检查工具[golangci-lint](https://github.com/golangci/golangci-lint)
+
+### 为什么选择golangci-lint做静态代码检查？
+
+- 速度非常快：golangci-lint是基于gometalinter开发的，但是平均速度要比gometalinter快5倍。golangci-lint速度快的原因有三个：可以并行检查代码；可以复用go build缓存；会缓存分析结果。
+- 可配置：支持YAML格式的配置文件，让检查更灵活，更可控。
+- IDE集成：可以集成进多个主流的IDE，例如 VS Code、GNU Emacs、Sublime Text、Goland等。
+- linter聚合器：1.41.1版本的golangci-lint集成了76个linter，不需要再单独安装这76个linter。并且golangci-lint还支持自定义linter。
+- 最小的误报数：golangci-lint调整了所集成linter的默认设置，大幅度减少了误报。
+- 良好的输出：输出的结果带有颜色、代码行号和linter标识，易于查看和定位。
+
+
+
+### golangci-lint提供了哪些命令和选项？
+
+| 子命令     | 功能                                     |
+| ---------- | ---------------------------------------- |
+| cache      | 缓存控制，并打印缓存的信息               |
+| completion | 输出bash/fish/powershell/zsh自动补全脚本 |
+| config     | 打印golangci-lint当前使用的配置文件路径  |
+| help       | 打印golangci-lint的帮助信息              |
+| linters    | 打印golangci-lint所支持的linter          |
+| run        | 执行golangci-lint对代码进行检查          |
+| version    | 打印golangci-lint的版本号                |
+
+
+
+| 选项               | 功能                                                       |
+| ------------------ | ---------------------------------------------------------- |
+| --color            | 是否打印带颜色的输出，有3个值：always，auto（默认），never |
+| j, —-concurrency   | 开启多少并发，默认：NumCPU                                 |
+| —cpu-profile-path  | 记录cpu性能数据到指定文件                                  |
+| --mem-profile-path | 记录memory性能数据到指定文件                               |
+| —-trace-path       | 生成跟踪文件                                               |
+| -h,--help          | 输出golangci-lint的help信息                                |
+| -V, —verbose       | 输出更多信息                                               |
+
+#### run命令
+
+#### cache命令
+
+#### completion命令
+
+#### config命令
+
+#### linters命令
+
+
+
+### golangci-lint配置
+
+
+
+| 选项                     | 功能                                                         |
+| ------------------------ | ------------------------------------------------------------ |
+| --print-issued-lines     | 显示检查失败行所在的行号，默认显示                           |
+| --print-linter-name      | 显示检查失败行是由哪个linter引起的失败，默认显示             |
+| --timeout                | 设置golangci-lint检查超时时间，默认1分钟                     |
+| --tests                  | 是否检查*_test.go文件，默认检查                              |
+| -c, --config PATH        | 指定配置文件，默认会从当前目录开始逐级往上查 找golangci.yaml、-golangci.json、golangci.xml文件，一直查找到根（/）目录，如果找到则使用找到的文件作为配置文件 |
+| --no-config              | 不读取任何配置文件                                           |
+| --skip-dirs              | 设置需要忽略的文件夹，支持正则表达式，可以设置多个目录/正则，用逗号隔开 |
+| --skip-dirs-use-default  | 使用预设的规则来忽略文件夹，默认true                         |
+| --skip-files             | 设置需要忽略的文件，支持正则表达式，可以设置多个目录/正则，用逗号隔开 |
+| -E, --enable             | 使用指定的linter                                             |
+| -D, --disable            | 禁用指定的linter                                             |
+| --disable-all            | 禁用所有的linter                                             |
+| --fast                   | 从启用的linter中，选出支持快速检查的linter，这些linter在第一次执，行时，需要缓存类型信息，所以第一次检查并不快，但后续的检查会 |
+| -e, --exclude            | 设置需要忽略的检查错误                                       |
+| --exclude-use-default    | 忽略预设的错误，默itrue                                      |
+| --exclude-case-sensitive | 设置exclue规则时，是否大小写敏感                             |
+| --max-issues-per-linter  | 设置每个linter报告错误的最大错误数，默认50                   |
+| --fix                    | 如果linter支持修复功能，则fx发现的错误                       |
+
+
+
+### 如何使用golangci-lint进行静态代码检查？
+
+
+
+### golangci-lint使用技巧
+
+技巧1：第一次修改，可以按目录修改。
+技巧2：按文件修改，减少文件切换次数，提高修改效率。
+技巧3：把linters-setting.lll.line-length设置得大一些。
+技巧4：尽可能多地使用golangci-lint提供的linter。
+技巧5：每次修改代码后，都要执行golangci-lint。
+技巧6：建议在根目录下放一个通用的golangci-lint配置文件。
+
+
+
+
+## 17 API 文档：如何生成 Swagger API 文档 ？
+
+### Swagger介绍
+
+Swagger是一套围绕OpenAPI规范构建的开源工具，可以设计、构建、编写和使用REST API。Swagger包含很多工具，其中主要的Swagger工具包括：
+
+- **Swagger编辑器：**基于浏览器的编辑器，可以在其中编写OpenAPI规范，并实时预览API文档。[https://editor.swagger.io](https://editor.swagger.io/) 就是一个Swagger编辑器，你可以尝试在其中编辑和预览API文档。
+- **Swagger UI：**将OpenAPI 规范呈现为交互式API文档，并可以在浏览器中尝试API调用。
+- **Swagger Codegen：**根据OpenAPI规范，生成服务器存根和客户端代码库，目前已涵盖了40多种语言。
+
+#### Swagger和OpenAPI的区别
+
+
+
+### 用go-swagger来生成Swagger API文档
+
+安装Swagger工具
+
+#### swagger命令行工具介绍
+
+swagger命令格式为`swagger [OPTIONS] <command>`。
+
+| 子命令   | 功能                                                |
+| -------- | --------------------------------------------------- |
+| diff     | 对比两个swagger文档的差异                           |
+| expand   | 展开Swagger定义文档中的$ref                         |
+| flatten  | 展平swagger文档                                     |
+| generate | 生成swagger文档、客户端代码、服务端代码等           |
+| ini      | 初始化一个swagger定义文档，初始化时可以指定一些配置 |
+| mix      | 合并Swagger文档                                     |
+| serv     | 启动HTTP服务，以查看Swagger文档                     |
+| validate | 验证Swagger定义文件是否正确                         |
+| version  | 打印swagger命令版本                                 |
+
+### 如何使用swagger命令生成Swagger文档？
+
+go-swagger通过解析源码中的注释来生成Swagger文档，go-swagger的详细注释语法可参考[官方文档](https://goswagger.io/)。常用的有如下几类注释语法：
+
+| 注释语法            | 功能                     |
+| ------------------- | ------------------------ |
+| swagger:meta        | 定义API接口全局基本信息  |
+| swagger:route       | 定义路由信息             |
+| swagger:parameter S | 定义API请求参数          |
+| swagger:response    | 定义API响应参数          |
+| swagger:model       | 定义可以复用的Go数据结构 |
+| swagger:allOf       | 嵌入其他Go结构体         |
+| swagger:strfmt      | 定义格式化的字符串       |
+| swagger:ignore      | 定义需要忽略的结构体     |
+
+
+
+#### 解析注释生成Swagger文档
+
+
+
+#### go-swagger其他常用功能介绍
+
+
+
+### IAM Swagger文档
+
+
+
+
+
+## 18 错误处理（上）：如何设计一套科学的错误码？
+
+既然是直接面向用户，那么首先就要求消息返回格式是规范的；其次，如果接口报错，还要能给用户提供一些有用的报错信息，通常需要包含Code码（用来唯一定位一次错误）和Message（用来展示出错的信息）。这就需要设计一套规范的、科学的错误码。
+
+### 期望错误码实现的功能
+
+### 常见的错误码设计方式
+
+### 错误码设计建议
+
+- 有区别于`http status code`的业务码，业务码需要有一定规则，可以通过业务码判断出是哪类错误。
+- 请求出错时，可以通过`http status code`直接感知到请求出错。
+- 需要在请求出错时，返回详细的信息，通常包括3类信息：业务Code码、错误信息和参考文档（可选）。
+- 返回的错误信息，需要是可以直接展示给用户的安全信息，也就是说不能包含敏感信息；同时也要有内部更详细的错误信息，方便debug。
+- 返回的数据格式应该是固定的、规范的。
+- 错误信息要保持简洁，并且提供有用的信息。
+
+### 业务Code码设计
+
+如何设置HTTP Status Code
+
+### IAM项目错误码设计规范
+
+#### Code设计规范
+
+Code 代码从 **100001** 开始，1000 以下为 `github.com/marmotedu/errors` 保留 code。
+
+| 数字标号 | 代表说明                                      |
+| -------- | --------------------------------------------- |
+| 10       | 服务                                          |
+| 00       | 模块                                          |
+| 01       | 模块下的错误码序号，每个模块可以注册100个错误 |
+
+##### 服务和模块说明
+
+| 服务 | 模块 | 说明（服务-模块）                |
+| ---- | ---- | -------------------------------- |
+| 10   | 0    | 通用- 基本错误                   |
+| 10   | 1    | 通用-数据库类错误                |
+| 10   | 2    | 通用-认证授权类错误              |
+| 10   | 3    | 通用-加解码类错误                |
+| 11   | 0    | iam-apiserver服务 - 用户模块错误 |
+| 11   | 1    | iam-apiserver服务 - 密钥模块错误 |
+| 11   | 2    | iam-apiserver服务- 策略模块错误  |
+
+##### 错误信息规范说明
+
+- 对外暴露的错误，统一大写开头，结尾不要加`.`。
+- 对外暴露的错误要简洁，并能准确说明问题。
+- 对外暴露的错误说明，应该是 `该怎么做` 而不是 `哪里错了`。
+
+- 不能包含敏感信息。
+
+#### IAM API接口返回值说明
+
+| Identifier                  | Code   | HTTP Code | Description                                          |
+| --------------------------- | ------ | --------- | ---------------------------------------------------- |
+| ErrSuccess                  | 100001 | 200       | OK                                                   |
+| ErrUnknown                  | 100002 | 500       | Internal server error                                |
+| ErrBind                     | 100003 | 400       | Error occurred while binding the request body to the |
+| ErrValidation               | 100004 | 400       | Validation failed                                    |
+| Err TokenInvalid            | 100005 | 401       | Token invalid                                        |
+| ErrPageNotFound             | 100006 | 404       | Page not found                                       |
+| ErrDatabase                 | 100101 | 500       | Database error                                       |
+| ErrEncrypt                  | 100201 | 401       | Error occurred while encrypting the user password    |
+| ErrSignaturelnvalid         | 100202 | 401       | Signature is invalid                                 |
+| ErrExpired                  | 100203 | 401       | Token expired                                        |
+| ErrInvalidAuthHeader 100204 |        | 401       | Invalid authorization header                         |
+| ErrMissingHeader            | 100205 | 401       | The Authorization header was empty                   |
+| ErrSecretNotFound           | 110102 | 404       | Secret not found                                     |
+| ErrPolicyNotFound           | 110201 | 404       | User not found                                       |
+
+| ErrPasswordIncorrect 100206 |        | 401  | Password was incorrect                        |
+| --------------------------- | ------ | ---- | --------------------------------------------- |
+| ErrPermissionDenied         | 100207 | 403  | Permission denied                             |
+| ErrEncodingFailed           | 100301 | 500  | Encoding failed due to an error with the data |
+| ErrDecodingFailed           | 100302 | 500  | Decoding failed due to an error with the data |
+| ErrInvalidJSON              | 100303 | 500  | Data is not valid JSON                        |
+| ErrEncodingJSON             | 100304 | 500  | JSON data could not be encoded                |
+| ErrDecodingJSON             | 100305 | 500  | JSON data could not be decoded                |
+| ErrInvalidYaml              | 100306 | 500  | Data is not valid Yaml                        |
+| ErrEncodingYaml             | 100307 | 500  | Yaml data could not be encoded                |
+| ErrDecodingYaml             | 100308 | 500  | Yaml data could not be decoded                |
+| ErrUserNotFound             | 110001 | 404  | User not found                                |
+| ErrUserAlreadyExist         | 110002 | 400  | User already exist                            |
+| ErrReachMaxCount            | 110101 | 400  | Secret reach the max count                    |
+| ErrSecretNotFound           | 110102 | 404  | Secret not found                              |
+| ErrPolicyNotFound           | 110201 | 404  | User not found                                |
+
+
+
+## 19 错误处理（下）：如何设计错误包？
+
+业界有很多优秀的、开源的错误包可供选择，例如Go标准库自带的`errors`包、`github.com/pkg/errors`包。但是这些包目前还不支持业务错误码，很难满足生产级应用的需求。所以，在实际开发中，我们有必要开发出适合自己错误码设计的错误包。当然，我们也没必要自己从0开发，可以基于一些优秀的包来进行二次封装。
+
+### 错误包需要具有哪些功能？
+
+### 错误包实现
+
+### 如何记录错误？
+
+### 一个错误码的具体实现
+
+### 错误码实际使用方法示例
+
+
+
+
+
+## 20 日志处理（上）：如何设计日志包并记录日志？
+
+### 如何设计日志包
+
+基础功能
+高级功能
+可选功能
+设计日志包时需要关注的点
+
+### 如何记录日志？
+
+在何处打印日志？
+在哪个日志级别打印日志？
+如何记录日志内容？
+记录日志的“最佳”实践总结
+
+### 拓展内容：分布式日志解决方案（EFK/ELK）
+
+
+
+## 21 日志处理（下）：手把手教你从 0 编写一个日志包
+
+### 优秀的开源日志包
+
+标准库log包
+glog
+logrus
+zap
+开源日志包选择
+
+### 从0编写一个日志包
+
+定义日志级别和日志选项
+创建Logger及各级别日志打印方法
+将日志输出到支持的输出中
+自定义日志输出格式
+测试日志包
+
+### IAM项目日志包设计
+
+
+
+
+
+
+
+## 22 应用构建三剑客：Pflag、Viper、Cobra 核心功能介绍
+
+### 如何构建应用框架
+
+### 命令行参数解析工具：Pflag使用介绍
+
+Pflag包Flag定义
+Pflag包FlagSet定义
+Pflag使用方法
+
+### 配置解析神器：Viper使用介绍
+
+读入配置
+读取配置
+
+### 现代化的命令行框架：Cobra全解
+
+使用Cobra库创建命令
+使用标志
+非选项参数验证
+PreRun and PostRun Hooks
+
+
+## 23 应用构建实战：如何构建一个优秀的企业应用框架？
+
+### 构建应用的基础：应用的三大基本功能
+
+![](images/image-20240719194637004.png)
+
+### iam-apiserver 是如何构建应用框架的？
+
+
+
+### App 包设计和实现
+
+第 1 步：构建应用
+第 2 步：命令行程序构建
+第 3 步：命令行参数解析
+第 4 步：配置文件解析
+
+### 这样构建的应用程序，有哪些优秀特性？
+
+
+
+### 如果你想自己构建应用，需要注意些什么？
+
+
 
 
 
 # 三、服务开发
 
-24 Web 服务：Web 服务核心功能有哪些，如何实现？
+## 24 Web服务：Web服务核心功能有哪些，如何实现？
 
-25 认证机制：应用程序如何进行访问认证？
+### Web服务的核心功能
 
-26 IAM项目是如何设计和实现访问认证功能的？
+![](images/image-20240719194907729.png)
 
-27 权限模型：5大权限模型是如何进行资源授权的？
+**Web服务最核心的功能是路由匹配。**路由匹配其实就是根据`(HTTP方法, 请求路径)`匹配到处理这个请求的函数，最终由该函数处理这次请求，并返回结果，过程如下图所示：
 
-28 控制流（上）：通过iam-apiserver设计，看Web服务的构建
+![](images/image-20240719195015886.png)
 
-29 控制流（下）：iam-apiserver服务核心功能实现讲解
+### 为什么选择Gin框架？
 
 
-30 ORM：CURD 神器 GORM 包介绍及实战
 
-31 数据流：通过iam-authz-server设计，看数据流服务的设计
+### Gin是如何支持Web服务基础功能的？
 
-32 数据处理：如何高效处理应用程序产生的数据？
+HTTP/HTTPS支持
+JSON数据格式支持
+路由匹配
+路由分组
+一进程多服务
+参数解析、参数校验、逻辑处理、返回结果
 
-33 SDK 设计（上）：如何设计出一个优秀的 Go SDK？
 
-34 SDK 设计（下）：IAM项目Go SDK设计和实现
 
-35 效率神器：如何设计和实现一个命令行客户端工具？
+### Gin是如何支持Web服务高级功能的？
+
+#### 中间件
+
+
+
+| 中间件            | 功能                                                       |
+| ----------------- | ---------------------------------------------------------- |
+| gin-jwt           | JWT中间件，实现JWT认证                                     |
+| gin-swagger       | #z#sSwagger 2.0##I#JRESTful APIX*                          |
+| cors              | 实现HTTP请求跨域                                           |
+| sessions          | 会话管理中间件                                             |
+| authz             | 基于casbin的授权中间件                                     |
+| pprof             | gin pprof中间件                                            |
+| go-gin-prometheus | Prometheus metrics exporter                                |
+| gzip              | 支持HTTP请求和响应的gzip压缩                               |
+| gin-limit         | HTTP请求并发控制中间件                                     |
+| requestid         | 给每个Request生成uuid，并添加在返回的X-Request-ID Header中 |
+
+
+
+#### 认证、RequestID、跨域
+
+
+
+#### 优雅关停
+
+
+
+## 25 认证机制：应用程序如何进行访问认证？
+
+保证应用的安全是软件开发的最基本要求，有多种途径来保障应用的安全：
+
+- 运维角度：网络隔离、设置防火墙、设置IP黑白名单等。
+- 开发者从软件层面来保证应用的安全：认证。
+
+### 认证和授权有什么区别？
+
+- **认证（Authentication，英文缩写authn）**：用来验证某个用户是否具有访问系统的权限。如果认证通过，该用户就可以访问系统，从而创建、修改、删除、查询平台支持的资源。
+- **授权（Authorization，英文缩写authz）**：用来验证某个用户是否具有访问某个资源的权限，如果授权通过，该用户就能对资源做增删改查等操作。
+
+![](images/image-20240719195528621.png)
+
+一个仓库系统，用户 james、colin、aaron分别创建了Product-A、Product-B、Product-C。现在用户colin通过用户名和密码（认证）成功登陆到仓库系统中，但他尝试访问Product-A、Product-C失败，因为这两个产品不属于他（授权失败），但他可以成功访问自己创建的资源Product-B（授权成功）。由此可见：**认证证明了你是谁，授权决定了你能做什么。**
+
+### 四种基本的认证方式
+
+Basic
+Digest
+OAuth
+Bearer
+
+### 基于JWT的Token认证机制实现
+
+JWT简介
+JWT认证流程
+JWT格式
+
+
+
+## 26 IAM项目是如何设计和实现访问认证功能的？
+
+
+
+
+
+## 27 权限模型：5大权限模型是如何进行资源授权的？
+
+### 权限相关术语介绍
+
+![](images/image-20240719195927779.png)
+
+### 权限模型介绍
+
+- 权限控制列表（ACL，Access Control List）。
+- 自主访问控制（DAC，Discretionary Access Control）。
+- 强制访问控制（MAC，Mandatory Access Control）。
+- 基于角色的访问控制（RBAC，Role-Based Access Control）。
+- 基于属性的权限验证（ABAC，Attribute-Based Access Control）。
+
+#### 简单的权限模型：权限控制列表（ACL）
+
+#### 基于ACL下放权限的权限模型：自主访问控制（DAC）
+
+#### 基于ACL且安全性更高的权限模型：强制访问控制（MAC）
+
+#### 最普及的权限模型：基于角色的访问控制（RBAC）
+
+![](images/image-20240719200013077.png)
+
+#### 最强大的权限模型：基于属性的权限验证（ABAC）
+
+
+
+### 相关开源项目
+
+Casbin
+keto
+go-admin
+LyricTian/gin-admin
+gin-vue-admin
+
+#### 选择建议
+
+
+
+## 28 控制流（上）：通过iam-apiserver设计，看Web服务的构建
+
+
+
+## 29 控制流（下）：iam-apiserver服务核心功能实现讲解
+
+
+
+## 30 ORM：CURD神器GORM包介绍及实战
+
+Go中ORM有[gorm](https://github.com/go-gorm/gorm)、[xorm](https://github.com/go-xorm/xorm)、[gorose](https://github.com/gohouse/gorose)等。
+
+
+
+## 31 数据流：通过iam-authz-server设计，看数据流服务的设计
+
+
+
+## 32 数据处理：如何高效处理应用程序产生的数据？
+
+一个大型应用为了后期的排障、运营等，会将一些请求数据保存在存储系统中，供日后使用。例如：应用将请求日志保存到 Elasticsearch 中，方便排障；网关将 API 请求次数、请求消息体等数据保存在数据库中，供控制台查询展示。
+
+### 数据采集方式的分类
+
+数据采集主要有两种方式：同步采集和异步采集。
+
+|           | 概念                                                         | 优点                                  | 缺点                                       |
+| --------- | ------------------------------------------------------------ | ------------------------------------- | ------------------------------------------ |
+| 同步 采集 | 数据同步实时地上报给目标系统，例如 MySQL、Elasticsearch、Prometheus 等 | 数据实时上报，采集逻辑较异步 采集简单 | 会 加应用程序的请求延时，影响应用 程序性能 |
+| 异步 采集 | 数据异步上报给目标系统，例如 MySQL, Elasticsearch, Prometheus 等 | 几乎不会对应用程序的性能产生影响      | 数据上报有延时，采集逻辑 较同步采集复 杂   |
+
+
+
+### 数据采集系统设计
+
+#### 设计数据采集系统时需要解决的核心问题
+
+![](images/image-20240719200936427.png)
+
+
+
+#### 数据上报功能设计
+
+#### 数据采集功能设计
+
+#### 数据采集应用模型
+
+![](images/image-20240719201017144.png)
+
+### 数据采集系统落地项目：iam-authz-server + iam-pump
+
+
+
+### iam-authz-server：数据上报
+
+![](images/image-20240719201101671.png)
+
+启动服务：启动数据上报服务
+运行服务：异步上报授权日志
+关停服务：优雅关停数据上报
+
+### iam-pump：数据采集
+
+![](images/image-20240719201131754.png)
+
+初始化服务：数据采集插件定义
+初始化服务：初始化数据采集插件
+初始化服务：健康检查
+运行服务：启动 Loop 周期性消费 Redis 数据
+关停服务：优雅关停数据采集服务
+
+
+
+## 33 SDK 设计（上）：如何设计出一个优秀的 Go SDK？
+
+后端服务通过API接口对外提供应用的功能，但是用户直接调用API接口，需要编写API接口调用的逻辑，并且需要构造入参和解析返回的数据包，使用起来效率低，而且有一定的开发工作量。
+
+在实际的项目开发中，通常会提供对开发者更友好的SDK包，供客户端调用。很多大型服务在发布时都会伴随着SDK的发布。
+
+### 什么是SDK？
+
+对于SDK（Software Development Kit，软件开发工具包），不同场景下有不同的解释。但是对于一个Go后端服务来说，SDK通常是指**封装了Go后端服务API接口的软件包**，里面通常包含了跟软件相关的库、文档、使用示例、封装好的API接口和工具。
+
+### SDK设计方法
+
+#### 如何给SDK命名？
+
+#### SDK的目录结构
+
+#### SDK设计方法
+
+![](images/image-20240719201448947.png)
+
+### 公有云厂商采用的SDK设计方式
+
+![](images/image-20240719201510165.png)
+
+API层：创建客户端实例
+基础层：构建并执行HTTP请求
+第一步，Builder：构建请求参数。
+第二步，Signer：签发并添加认证头。
+
+
+
+## 34 SDK 设计（下）：IAM项目Go SDK设计和实现
+
+
+
+## 35 效率神器：如何设计和实现一个命令行客户端工具？
+
+### 常见客户端介绍
+
+### 大型系统客户端（xxxctl）的特点
+
+### iamctl的核心实现
+
+#### iamctl的功能
+
+![](images/image-20240719201915344.png)
+
+
+
+#### 代码结构
+
+#### 命令行选项
+
+#### 配置文件解析
+
+
+
+### iamctl中子命令是如何构建的？
+
+#### 命令构建
+
+![](images/image-20240719201949042.png)
+
+#### 自动生成命令
+
+#### 命令自动补全
+
+#### 更友好的输出
+
+
+
+### iamctl是如何进行API调用的？
+
+客户端配置文件
+SDK调用
+REST API调用
+
+
+
 
 
 
