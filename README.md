@@ -441,32 +441,639 @@ docs
 
 - **确定语义化版本的版本号**。比如 `fix` 类型可以映射为 PATCH 版本，`feat` 类型可以映射为 MINOR 版本。带有 `BREAKING CHANGE` 的 commit，可以映射为 MAJOR 版本。
 
+### 5.1 Commit Message的规范有哪些？
+
+社区有多种 Commit Message 的规范，例如 jQuery、Angular 等：
+
+![](images/c090bd82c2d14631bc26ccaa52276d0e.jpg)
+
+**[Angular](https://github.com/angular/angular)规范**在功能上能够满足开发者 commit 需求，在格式上清晰易读，目前也是用得最多的。
+
+![](images/image-20240719111435758.png)
+
+完整的符合 Angular 规范的 Commit Message:
+
+![](images/a18bf0fad3814222b13523619d008688.jpg)
+
+在 Angular 规范中，Commit Message 包含三个部分，分别是 **Header**、**Body** 和 **Footer**：
+
+```
+<type>[optional scope]: <description>
+// 空行
+[optional body]
+// 空行
+[optional footer(s)]
+```
+
+其中，Header是必需的，Body和Footer可以省略。在以上规范中，`<scope>`必须用括号 `()` 括起来， `<type>[<scope>]` 后必须紧跟冒号 ，冒号后必须紧跟空格，2 个空行也是必需的。
+
+实际开发中，为了更加易读，往往会限制每行 message 的长度，可以限制为 50/72/100 个字符。
+
+#### Header
+
+Header 部分只有一行，包括三个字段：**type**（必选）、**scope**（可选）和 **subject**（必选）。
+
+type主要可以归为两类：
+
+- **Development**：这类修改一般是**项目管理类的变更**，不会影响最终用户和生产环境的代码，比如 CI 流程、构建方式等的修改。遇到这类修改，通常也意味着可以免测发布。
+- **Production**：这类修改会影响最终的用户和生产环境的代码。所以对于这种改动，我们一定要慎重，并在提交前做好充分的测试。
+
+在做 Code Review 时，如果遇到 Production 类型的代码，一定要认真 Review，因为这种类型，会影响到现网用户的使用和现网应用的功能。
+
+![](images/efc195aa75ee43a78626dc06ff2dfaa4.jpg)
+
+如何确定一个 commit 所属的 type 呢？
+
+![](images/4aaa87fb06924e9380f3e1d28aac124b.jpg)
 
 
-Commit Message 的规范有哪些？
-- Header
-- Body
-- Footer
-- Revert Commit
 
-Commit 相关的 3 个重要内容
-- 提交频率
-- 合并提交
-  - git rebase 命令介绍
-  - 合并提交操作示例
-- 修改 Commit Message
-  - git commit –amend：修改最近一次 commit 的 message
-  - git rebase -i：修改某次 commit 的 message
+> **一定要保证一个项目中的 type 类型一致。**
 
-Commit Message 规范自动化
+scope 是用来说明 commit 的**影响范围**的，必须是**名词**。显然，不同项目会有不同的 scope。在项目初期，我们可以设置一些**粒度**比较大的 scope，比如可以按**组件名或者功能**来设置 scope；后续，如果项目有变动或者有新功能，我们可以再用追加的方式添加新的 scope。
+
+例如，本项目主要是根据组件名和功能来设置的：apiserver、authzserver、user等。
+
+| scope       | description                            |
+| ----------- | -------------------------------------- |
+| apiserver   | iam-apiserver 组件相关的变更           |
+| authzserver | iam-auth-server 组件相关的变更         |
+| pump        | iam-pump 组件相关的变更                |
+| iamctl      | iamctl 组件相关的变更                  |
+| user        | iam-apiserver 中 user 模块相关的变更   |
+| policy      | iam-apiserver 中 policy 模块相关的变更 |
+| secret      | iam-apiserver 中 secret 模块相关的变更 |
+| pkg         | pkg 包的变更                           |
+| docs        | 文档类变更                             |
+| changelog   | CHANGELOG 的变更                       |
+| makefile    | Makefile 文件的变更                    |
+
+**scope 不适合设置太具体的值**。
+
+subject 是 commit 的**简短描述**，必须以**动词开头、使用现在时**。比如，我们可以用 change，却不能用 changed 或 changes，而且这个动词的第一个字母必须是**小写**。通过这个动词，我们可以明确地知道 commit 所执行的操作。此外subject 的结尾**不能加英文句号**。
+
+#### Body
+
+对本次 commit 的更详细描述。
+
+格式比较自由，可以有**要包括修改的动机**，以及 **和跟上一版本相比的改动点**等。
+
+#### Footer
+
+主要用来说明本次 commit 导致的后果。
+
+在实际应用中，Footer通常用来说明**不兼容的改动和关闭的Issue列表**，格式如下：
+
+```
+BREAKING CHANGE: <breaking change summary>
+// 空行
+<breaking change description + migration instructions>
+// 空行
+// 空行
+Fixes #<issue number>
+```
+
+- 不兼容的改动：如果当前代码跟上一个版本不兼容，需要在 Footer 部分，以 `BREAKING CHANG:` 开头，后面跟上不兼容改动的摘要。Footer 的其他部分需要说明变动的描述、变动的理由和迁移方法，例如：
+
+```
+BREAKING CHANGE: isolate scope bindings definition has changed and
+    the inject option for the directive controller injection was removed.
+
+    To migrate the code follow the example below:
+
+    Before:
+
+    scope: {
+      myAttr: 'attribute',
+    }
+
+    After:
+
+    scope: {
+      myAttr: '@',
+    }
+    The removed `inject` wasn't generaly useful for directives so there should be no code using it.
+```
+
+- 关闭的 Issue 列表：关闭的 Bug 需要在 Footer 部分新建一行，并以 Closes 开头列出，例如：`Closes #123`。如果关闭了多个 Issue，可以这样列出：`Closes #123, #432, #886`。例如:
+
+```
+Change pause version value to a constant for image
+    
+    Closes #1137
+```
+
+
+
+#### Revert Commit
+
+一种特殊情况：如果当前 commit 还原了先前的 commit，则应以 `revert:` 开头，后跟还原的 commit 的 Header。而且，在 Body 中必须写成 `This reverts commit <hash>` ，其中 hash 是要还原的 commit 的 SHA 标识。例如：
+
+```
+revert: feat(iam-apiserver): add 'Host' option
+
+This reverts commit 079360c7cfc830ea8a6e13f4c8b8114febc9b48a.
+```
+
+> 为了更好地遵循Angular规范，建议在提交代码时养成不用 `git commit -m`，即不用-m 选项的习惯，而是直接用 `git commit` 或者 `git commit -a` 进入交互界面编辑 Commit Message。这样可以更好地格式化 Commit Message。
+
+### 5.2 Commit相关的3个重要内容 🔖
+
+#### 1️⃣提交频率
+
+
+
+可以在最后合并代码或者提交 Pull Request 前，执行 `git rebase -i` 合并之前的所有 commit。
+
+#### 2️⃣合并提交
+
+- git rebase命令介绍
+
+git rebase 的最大作用是它可以==重写历史==。
+
+`git rebase -i <commit ID>`，`-i` 参数表示交互（interactive），该命令会进入到一个交互界面(Vim)中，可以对里面的 commit 做一些操作:
+
+
+
+交互界面会首先列出给定`<commit ID>`之前（不包括 ，越下面越新）的所有 commit，每个 commit 前面有一个操作命令，默认是 pick。我们可以选择不同的 commit，并修改 commit 前面的命令，来对该 commit 执行不同的变更操作。
+
+git rebase支持的变更操作如下：
+
+![](images/image-20240719121101308.png)
+
+
+
+
+
+- 合并提交操作示例
+
+#### 3️⃣修改Commit Message
+
+- git commit –amend：修改最近一次 commit 的 message
+- git rebase -i：修改某次 commit 的 message
+
+
+
+### 5.3 Commit Message规范自动化
+
+Commit Message 规范如果靠文档去约束，就会严重依赖开发者的代码素养，并不能真正保证提交的 commit 是符合规范的。
+
+![](images/image-20240719122805028.png)
+
+
+
+## 6 目录结构设计：如何组织一个可维护、可扩展的代码目录？
+
+目录结构是一个项目的门面。很多时候，根据目录结构就能看出开发者对这门语言的掌握程度。
+
+### 6.1 如何规范目录？
+
+目录规范，通常是指项目由**哪些目录**组成，每个目录下**存放什么文件、实现什么功能**，以及各个目录间的**依赖关系**是什么等。
+
+一个好的目录结构至少要满足以下几个要求:
+
+- **命名清晰**：目录命名要清晰、简洁，不要太长，也不要太短，目录名要能清晰地表达出该目录实现的功能，并且目录名最好用单数。一方面是因为单数足以说明这个目录的功能，另一方面可以统一规范，避免单复混用的情况。
+- **功能明确**：一个目录所要实现的功能应该是明确的、并且在整个项目目录中具有很高的辨识度。也就是说，当需要新增一个功能时，我们能够非常清楚地知道把这个功能放在哪个目录下。
+- **全面性**：目录结构应该尽可能全面地包含研发过程中需要的功能，例如文档、脚本、源码管理、API 实现、工具、第三方包、测试、编译产物等。
+- **可观测性**：项目规模一定是从小到大的，所以一个好的目录结构应该能够在项目变大时，仍然保持之前的目录结构。
+- **可扩展性**：每个目录下存放了同类的功能，在项目变大时，这些目录应该可以存放更多同类功能。
+
+**根据功能，将目录结构分为结构化目录结构和平铺式目录结构两种**。结构化目录结构主要用在**Go应用**中，相对来说比较复杂；而平铺式目录结构主要用在**Go包**(代码框架/库)中，相对来说比较简单。
+
+### 6.2 平铺式目录结构
+
+平铺方式就是在项目的根目录下存放项目的代码，整个目录结构看起来更像是一层的。例如[glog](https://github.com/golang/glog):
+
+![](images/image-20240719124012001.png)
+
+### 6.3 结构化目录结构
+
+当前Go社区比较推荐的结构化目录结构是 [project-layout](https://github.com/golang-standards/project-layout) 。
+
+#### Go项目通常包含的功能
+
+- 项目介绍：README.md。
+- 客户端：xxxctl。
+- API 文档。
+- 构建配置文件，CICD 配置文件。
+- CHANGELOG。
+- 项目配置文件。
+- kubernetes 部署定义文件（未来容器化是趋势，甚至会成为服务部署的事实标准，所以目录结构中需要有存放 kubernetes 定义文件的目录）。
+- Dockerfile 文件。
+- systemd/init 部署配置文件（物理机/虚拟机部署方式需要）。
+- 项目文档。
+- commit message 格式检查或者其他 githook。
+- 请求参数校验。
+- 命令行 flag。
+- 共享包：
+  - 外部项目可导入。
+  - 只有子项目可导入。
+- storage 接口。
+- 项目管理：Makefile，完成代码检查、构建、打包、测试、部署等。
+- 版权声明。
+- _output 目录（编译、构建产物）。
+- 引用的第三方包。
+- 脚本文件（可能会借助脚本，实现一些源码管理、构建、生成等功能）。
+- 测试文件。
+
+#### 目录结构参考
+
+结合project-layout和上面的Go项目常见功能，总结一套Go的代码结构组织方式：
+
+```
+├── api
+│   ├── openapi
+│   └── swagger
+├── build
+│   ├── ci
+│   ├── docker
+│   │   ├── iam-apiserver
+│   │   ├── iam-authz-server
+│   │   └── iam-pump
+│   ├── package
+├── CHANGELOG
+├── cmd
+│   ├── iam-apiserver
+│   │   └── apiserver.go
+│   ├── iam-authz-server
+│   │   └── authzserver.go
+│   ├── iamctl
+│   │   └── iamctl.go
+│   └── iam-pump
+│       └── pump.go
+├── configs
+├── CONTRIBUTING.md
+├── deployments
+├── docs
+│   ├── devel
+│   │   ├── en-US
+│   │   └── zh-CN
+│   ├── guide
+│   │   ├── en-US
+│   │   └── zh-CN
+│   ├── images
+│   └── README.md
+├── examples
+├── githooks
+├── go.mod
+├── go.sum
+├── init
+├── internal
+│   ├── apiserver
+│   │   ├── api
+│   │   │   └── v1
+│   │   │       └── user
+│   │   ├── apiserver.go
+│   │   ├── options
+│   │   ├── service
+│   │   ├── store
+│   │   │   ├── mysql
+│   │   │   ├── fake
+│   │   └── testing
+│   ├── authzserver
+│   │   ├── api
+│   │   │   └── v1
+│   │   │       └── authorize
+│   │   ├── options
+│   │   ├── store
+│   │   └── testing
+│   ├── iamctl
+│   │   ├── cmd
+│   │   │   ├── completion
+│   │   │   ├── user
+│   │   └── util
+│   ├── pkg
+│   │   ├── code
+│   │   ├── options
+│   │   ├── server
+│   │   ├── util
+│   │   └── validation
+├── LICENSE
+├── Makefile
+├── _output
+│   ├── platforms
+│   │   └── linux
+│   │       └── amd64
+├── pkg
+│   ├── util
+│   │   └── genutil
+├── README.md
+├── scripts
+│   ├── lib
+│   ├── make-rules
+├── test
+│   ├── testdata
+├── third_party
+│   └── forked
+└── tools
+```
+
+
+
+一个Go项目包含3大部分：**Go应用 、项目管理和文档**。所以，我们的项目目录也可以分为这3大类。同时，Go 应用又贯穿开发阶段、测试阶段和部署阶段，相应的应用类的目录，又可以按开发流程分为更小的子类。
+
+![](images/image-20240719124916890.png)
+
+
+
+#### Go应用：主要存放前后端代码
+
+##### `/web`
+
+前端代码存放目录，主要用来存放Web静态资源，服务端模板和单页应用（SPAs）。
+
+##### `/cmd`
+
+一个项目有很多组件，可以把组件 main 函数所在的文件夹统一放在`/cmd` 目录下。
+
+```sh
+$ tree cmd/
+cmd/
+├── gendocs
+│   └── gen_iamctl_docs.go
+├── geniamdocs
+│   ├── gen_iam_docs.go
+│   ├── gen_iam_docs_test.go
+│   ├── postprocessing.go
+│   └── postprocessing_test.go
+├── genman
+│   └── gen_iam_man.go
+├── genswaggertypedocs
+│   └── swagger_type_docs.go
+├── genyaml
+│   └── gen_iamctl_yaml.go
+├── iam-apiserver
+│   └── apiserver.go
+├── iam-authz-server
+│   └── authzserver.go
+├── iam-pump
+│   └── pump.go
+├── iam-watcher
+│   └── watcher.go
+└── iamctl
+    └── iamctl.go
+```
+
+每个组件的目录名应该跟你期望的可执行文件名是一致的。这里要保证 `/cmd/<组件名>` 目录下不要存放太多的代码，如果你认为代码可以导入并在其他项目中使用，那么它应该位于 /pkg 目录中。如果代码不是可重用的，或者你不希望其他人重用它，请将该代码放到 /internal 目录中。
+
+##### `/internal`
+
+存放**私有应用**和库代码。如果一些代码，你不希望在其他应用和库中被导入，可以将这部分代码放在`/internal` 目录下。
+
+引入其它项目internal下的包时，编译时报错：
+
+```
+An import of a path containing the element “internal” is disallowed
+if the importing code is outside the tree rooted at the parent of the
+"internal" directory.
+```
+
+可以通过 Go 语言本身的机制来约束其他项目 import 项目内部的包。`/internal` 目录建议包含如下目录：
+
+- /internal/apiserver：该目录中存放真实的应用代码。这些应用的共享代码存放在`/internal/pkg` 目录下。
+- /internal/pkg：存放项目内可共享，项目外不共享的包。这些包提供了比较基础、通用的功能，例如工具、错误码、用户验证等功能。
+
+建议：一开始将所有的共享代码存放在/`internal/pkg` 目录下，当该共享代码做好了对外开发的准备后，再转存到`/pkg`目录下。
+
+```
+internal/
+├── apiserver
+│   ├── api
+│   │   └── v1
+│   │       └── user
+│   ├── options
+│   ├── config
+│   ├── service
+│   │   └── user.go
+│   ├── store
+│   │   ├── mysql
+│   │   │   └── user.go
+│   │   ├── fake
+│   └── testing
+├── authzserver
+│   ├── api
+│   │   └── v1
+│   ├── options
+│   ├── store
+│   └── testing
+├── iamctl
+│   ├── cmd
+│   │   ├── cmd.go
+│   │   ├── info
+└── pkg
+    ├── code
+    ├── middleware
+    ├── options
+    └── validation
+```
+
+/internal 目录大概分为 3 类子目录：
+
+- /internal/pkg：内部共享包存放的目录。
+- /internal/authzserver、/internal/apiserver、/internal/pump、/internal/iamctl：应用目录，里面包含应用程序的实现代码。
+- /internal/iamctl：对于一些大型项目，可能还会需要一个客户端工具。
+
+在每个应用程序内部，也会有一些目录结构，这些目录结构主要根据功能来划分：
+
+- /internal/apiserver/api/v1：HTTP API 接口的具体实现，主要用来做 HTTP 请求的解包、参数校验、业务逻辑处理、返回。注意这里的业务逻辑处理应该是轻量级的，如果业务逻辑比较复杂，代码量比较多，建议放到 /internal/apiserver/service 目录下。该源码文件主要用来串流程。
+- /internal/apiserver/options：应用的 command flag。
+- /internal/apiserver/config：根据命令行参数创建应用配置。
+- /internal/apiserver/service：存放应用复杂业务处理代码。
+- /internal/apiserver/store/mysql：一个应用可能要持久化的存储一些数据，这里主要存放跟数据库交互的代码，比如 Create、Update、Delete、Get、List 等。
+
+/internal/pkg 目录存放项目内可共享的包，通常可以包含如下目录：
+
+- /internal/pkg/code：项目业务 Code 码。
+- /internal/pkg/validation：一些通用的验证函数。
+- /internal/pkg/middleware：HTTP 处理链。
+
+##### `/pkg`
+
+/pkg 目录是 Go 语言项目中非常常见的目录，我们几乎能够在所有知名的开源项目（非框架）中找到它的身影，例如 Kubernetes、Prometheus、Moby、Knative 等。
+
+该目录中存放可以被外部应用使用的代码库，其他项目可以直接通过 import 导入这里的代码。所以，在将代码库放入该目录时一定要慎重。
+
+##### `/vendor`
+
+项目依赖，可通过 `go mod vendor` 创建。需要注意的是，如果是一个 Go 库，不要提交 vendor 依赖包。
+
+`/third_party`
+
+外部帮助工具，分支代码或其他第三方应用（例如Swagger UI）。比如我们 fork 了一个第三方 go 包，并做了一些小的改动，我们可以放在目录/third_party/forked 下。一方面可以很清楚的知道该包是 fork 第三方的，另一方面又能够方便地和upstream同步。
+
+#### Go应用：主要存放测试相关的文件和代码
+
+`/test`
+
+用于存放其他外部测试应用和测试数据。/test 目录的构建方式比较灵活：对于大的项目，有一个数据子目录是有意义的。例如，如果需要 Go 忽略该目录中的内容，可以使用/test/data 或/test/testdata 目录。
+
+需要注意的是，**Go 也会忽略以“.”或 “_” 开头的目录或文件。**这样在命名测试数据目录方面，可以具有更大的灵活性。
+
+#### Go应用：存放跟应用部署相关的文件
+
+##### `/configs`
+
+用来配置文件模板或默认配置。例如，可以在这里存放 confd 或 consul-template 模板文件。
+
+> 注意：配置中不能携带敏感信息，这些敏感信息，可以用占位符来替代，如：
+>
+> ```yaml
+> apiVersion: v1    
+> user:    
+>   username: ${CONFIG_USER_USERNAME} # iam 用户名    
+>   password: ${CONFIG_USER_PASSWORD} # iam 密码
+> ```
+
+##### `/deployments`
+
+用来存放 Iaas、PaaS 系统和容器编排部署配置和模板（Docker-Compose，Kubernetes/Helm，Mesos，Terraform，Bosh）。在一些项目，特别是用 Kubernetes 部署的项目中，这个目录可能命名为 `deploy`。
+
+为什么要将这类跟 Kubernetes 相关的目录放到目录结构中呢？主要是因为当前软件部署基本都在朝着容器化的部署方式去演进。
+
+##### `/init`
+
+存放**初始化系统**（systemd，upstart，sysv）和**进程管理**配置文件（runit，supervisord）。比如 sysemd 的 unit 文件。这类文件，在非容器化部署的项目中会用到。
+
+#### 项目管理：存放用来管理Go项目的各类文件
+
+##### `/Makefile`
+
+虽然 Makefile 是一个很老的项目管理工具，但它仍然是最优秀的项目管理工具。
+
+Makefile通常用来执行静态代码检查、单元测试、编译等功能。其他常见功能，你可以参考这里： [Makefile常见管理内容](https://github.com/marmotedu/geekbang-go/blob/master/Makefile常见管理内容.md) 。
+
+我还有一条建议：直接执行 make 时，执行如下各项 `format -> lint -> test -> build`，如果是有代码生成的操作，还可能需要首先生成代码 `gen -> format -> lint -> test -> build`。
+
+在实际开发中，可以将一些重复性的工作自动化，并添加到 Makefile 文件中统一管理。
+
+##### `/scripts`
+
+该目录主要用来存放脚本文件，实现构建、安装、分析等不同功能。通常可以考虑包含以下3个目录：
+
+- /scripts/make-rules：用来存放 makefile 文件，实现`/Makefile` 文件中的各个功能。Makefile 有很多功能，为了保持它的简洁，我建议你将各个功能的具体实现放在`/scripts/make-rules` 文件夹下。
+- /scripts/lib：shell库，用来存放shell脚本。一个大型项目中有很多自动化任务，比如发布、更新文档、生成代码等，所以要写很多 shell 脚本，这些 shell 脚本会有一些通用功能，可以抽象成库，存放在`/scripts/lib` 目录下，比如 logging.sh，util.sh 等。
+- /scripts/install：如果项目支持自动化部署，可以将自动化部署脚本放在此目录下。如果部署脚本简单，也可以直接放在/scripts 目录下。
+
+另外，shell 脚本中的函数名，建议采用语义化的命名方式，例如 `iam::log::info` 这种语义化的命名方式，可以使调用者轻松的辨别出函数的功能类别，便于函数的管理和引用。在Kubernetes 的脚本中，就大量采用了这种命名方式。
+
+##### `/build`
+
+这里存放安装包和持续集成相关的文件。这个目录下有3个大概率会使用到的目录，在设计目录结构时可以考虑进去。
+
+- /build/package：存放容器（Docker）、系统（deb, rpm, pkg）的包配置和脚本。
+- /build/ci：存放 CI（travis，circle，drone）的配置文件和脚本。
+- /build/docker：存放子项目各个组件的 Dockerfile 文件。
+
+##### `/tools`
+
+存放这个项目的支持工具。这些工具可导入来自/pkg 和/internal 目录的代码。
+
+##### `/githooks`
+
+Git 钩子。比如，我们可以将 commit-msg 存放在该目录。
+
+##### `/assets`
+
+项目使用的其他资源(图片、CSS、JavaScript 等)。
+
+##### `/website`
+
+如果你不使用 GitHub 页面，那么可以在这里放置项目网站相关的数据。
+
+#### 文档：主要存放项目的各类文档
+
+##### `/README.md`
+
+项目的 README 文件一般包含了项目的介绍、功能、快速安装和使用指引、详细的文档链接以及开发指引等。有时候 README 文档会比较长，为了能够快速定位到所需内容，需要添加 markdown toc 索引，可以借助工具 [tocenize](https://github.com/nochso/tocenize) 来完成索引的添加。
+
+这里还有个建议，前面我们也介绍过 README 是可以规范化的，所以这个 README 文档，可以通过脚本或工具来自动生成。
+
+##### `/docs`
+
+存放设计文档、开发文档和用户文档等（除了 godoc 生成的文档）。推荐存放以下几个子目录：
+
+- /docs/devel/{en-US,zh-CN}：存放开发文档、hack 文档等。
+- /docs/guide/{en-US,zh-CN}: 存放用户手册，安装、quickstart、产品文档等，分为中文文档和英文文档。
+- /docs/images：存放图片文件。
+
+##### `/CONTRIBUTING.md`
+
+如果是一个开源就绪的项目，最好还要有一个 CONTRIBUTING.md 文件，用来说明**如何贡献代码，如何开源协同**等等。CONTRIBUTING.md 不仅能够规范协同流程，还能降低第三方开发者贡献代码的难度。
+
+##### `/api`
+
+/api 目录中存放的是当前项目对外提供的各种不同类型的 API 接口定义文件，其中可能包含类似 `/api/protobuf-spec`、`/api/thrift-spec`、`/api/http-spec`、`openapi`、`swagger` 的目录，这些目录包含了当前项目对外提供和依赖的所有 API 文件。例如，如下是 IAM 项目的/api 目录：
+
+```markdown
+├── openapi/
+│   └── README.md
+└── swagger/
+    ├── docs/
+    ├── README.md
+    └── swagger.yaml
+```
+
+二级目录的主要作用，就是在一个项目同时提供了**多种不同的访问方式**时，可以分类存放。用这种方式可以避免潜在的冲突，也能让项目结构更加清晰。
+
+##### `/LICENSE`
+
+版权文件可以是私有的，也可以是开源的。常用的开源协议有：Apache 2.0、MIT、BSD、GPL、Mozilla、LGPL。有时候，公有云产品为了打造品牌影响力，会对外发布一个本产品的开源版本，所以在项目规划初期最好就能规划下未来产品的走向，选择合适的 LICENSE。
+
+为了声明版权，你可能会需要将 LICENSE 头添加到源码文件或者其他文件中，这部分工作可以通过工具实现自动化，推荐工具： [addlicense](https://github.com/marmotedu/addlicense) 。
+
+当代码中引用了其它开源代码时，需要在 LICENSE 中说明对其它源码的引用，这就需要知道代码引用了哪些源码，以及这些源码的开源协议，可以借助工具来进行检查，推荐工具： [glice](https://github.com/ribice/glice) 。至于如何说明对其它源码的引用，大家可以参考下 IAM 项目的 [LICENSE](https://github.com/marmotedu/iam/blob/master/LICENSE) 文件。
+
+##### `/CHANGELOG`
+
+当项目有更新时，为了方便了解当前版本的更新内容或者历史更新内容，需要将更新记录存放到 CHANGELOG 目录。编写 CHANGELOG 是一个复杂、繁琐的工作，我们可以结合 [Angular规范](https://github.com/angular/angular/blob/22b96b9/CONTRIBUTING.md#-commit-message-guidelines) 和 [git-chglog](https://github.com/git-chglog/git-chglog) 来自动生成 CHANGELOG。
+
+##### `/examples`
+
+存放应用程序或者公共包的示例代码。这些示例代码可以降低使用者的上手门槛。
+
+#### 不建议的目录
+
+##### `/src/`
+
+一些开发语言，例如 Java 项目中会有 src 目录。在 Java 项目中， src 目录是一种常见的模式，但在 Go 项目中，不建议使用 src 目录。
+
+其中一个重要的原因是：在默认情况下，Go 语言的项目都会被放置到`$GOPATH/src` 目录下。这个目录中存放着所有代码，如果我们在自己的项目中使用`/src` 目录，这个包的导入路径中就会出现两个 src，例如：
+
+```bash
+$GOPATH/src/github.com/marmotedu/project/src/main.go
+```
+
+这样的目录结构看起来非常怪。
+
+##### `xxs/`
+
+在 Go 项目中，要避免使用带复数的目录或者包。建议统一使用单数。
+
+### 6.4 一些建议
+
+一个小型项目用不到这么多目录。对于小型项目，可以考虑先包含 cmd、pkg、internal 3 个目录，其他目录后面按需创建，例如：
+
+```csharp
+$ tree --noreport -L 2 tms
+tms
+├── cmd
+├── internal
+├── pkg
+└── README.md
+```
+
+另外，在设计目录结构时，一些**空目录**无法提交到 Git 仓库中，但我们又想将这个空目录上传到 Git 仓库中，以保留目录结构。这时候，可以在空目录下加一个 `.keep` 文件，例如：
+
+```shell
+$ ls -A build/ci/ 
+.keep
+```
 
 
 
 
 
 
-
-6 目录结构设计：如何组织一个可维护、可扩展的代码目录？
 
 7 工作流设计：如何设计合理的多人开发模式？
 
