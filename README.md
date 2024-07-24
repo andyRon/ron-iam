@@ -1,11 +1,13 @@
 ron-iam
 ---
 
-参考：[Go语言项目开发实战](https://time.geekbang.org/column/intro/100079601)
+> 参考：[Go语言项目开发实战](https://time.geekbang.org/column/intro/100079601)（2021）
+>
+> https://github.com/marmotedu/iam
+>
+> [《Go 语言项目开发实战》课程补充](https://github.com/marmotedu/geekbang-go)
 
-https://github.com/marmotedu/iam
 
-[《Go 语言项目开发实战》课程补充](https://github.com/marmotedu/geekbang-go)
 
 
 
@@ -15,7 +17,7 @@ https://github.com/marmotedu/iam
 
 Go应用的安全大体上分为2类：
 
-- **服务自身的安全**：为了保证服务的安全，需要禁止非法用户访问服务。这可以通过服务器层面和软件层面来解决。
+- **==服务自身的安全==**：为了保证服务的安全，需要禁止非法用户访问服务。这可以通过服务器层面和软件层面来解决。
 
   **服务器层面**可以通过**物理隔离、网络隔离、防火墙**等技术从底层保证服务的安全性，
 
@@ -23,7 +25,7 @@ Go应用的安全大体上分为2类：
 
   服务器层面一般由运维团队来保障，软件层面则需要开发者来保障。
 
-- 服务资源的安全：服务内有很多资源，为了避免非法访问，开发者要避免 UserA 访问到 UserB 的资源，也即需要对资源进行授权。通常，可以通过**资源授权系统**来对资源进行授权。
+- **==服务资源的安全==**：服务内有很多资源，为了避免非法访问，开发者要避免 UserA 访问到 UserB 的资源，也即需要对资源进行授权。通常，可以通过**资源授权系统**来对资源进行授权。
 
 对访问进行认证，对资源进行授权。
 
@@ -31,7 +33,7 @@ Go应用的安全大体上分为2类：
 
 ### 1.1 IAM系统是什么？
 
-IAM（Identity and Access Management，身份识别与访问管理）系统是用 Go 语言编写的一个 Web 服务，用于给第三方用户提供访问控制服务。
+IAM（Identity and Access Management，身份识别与访问管理）系统是用 Go 语言编写的一个Web服务，用于给第三方用户提供**访问控制服务**。
 
 解决的问题是：**在特定的条件下，谁能够/不能够对哪些资源做哪些操作**（Who is able to do what on something given some context），也即完成资源授权功能。
 
@@ -69,9 +71,7 @@ IAM（Identity and Access Management，身份识别与访问管理）系统是�
 
 那密钥和策略信息是如何实现缓存的呢？
 
-首先，iam-authz-server 通过调用 iam-apiserver 提供的 gRPC 接口，将密钥和授权策略信息缓存到内存中。同时，为了使内存中的缓存信息和 iam-apiserver 中的信息保持一致，当 iam-apiserver 中有密钥或策略被更新时，iam-apiserver 会往特定的 Redis Channel（iam-authz-server 也会订阅该 Channel）中发送PolicyChanged 和 SecretChanged 消息。这样一来，当 iam-authz-server 监听到有新消息时就会获取并解析消息，根据消息内容判断是否需要重新调用 gRPC 接来获取密钥和授权策略信息，再更新到内存中。
-
-
+首先，iam-authz-server 通过调用 iam-apiserver 提供的 gRPC 接口，将密钥和授权策略信息缓存到内存中。同时，为了使内存中的缓存信息和 iam-apiserver 中的信息保持一致，当 iam-apiserver 中有密钥或策略被更新时，iam-apiserver 会往特定的 **Redis Channel**（iam-authz-server 也会订阅该 Channel）中发送`PolicyChanged` 和 `SecretChanged` 消息。这样一来，当 iam-authz-server 监听到有新消息时就会获取并解析消息，根据消息内容判断是否需要重新调用 gRPC 接来获取密钥和授权策略信息，再更新到内存中。
 
 3. 授权日志数据分析。
 
@@ -81,7 +81,7 @@ iam-authz-server 会将授权日志上报到 Redis 高速缓存中，然后 iam-
 
 4. 运营平台授权数据展示。
 
-iam-operating-system 是 IAM 的运营系统，它可以通过查询 MongoDB 获取并展示运营数据，比如某个用户的授权/失败次数、授权失败时的授权信息等。
+iam-operating-system 是 IAM 的运营系统，它可以通过查询 MongoDB 获取并展示运营数据，比如某个用户的**授权/失败次数、授权失败时的授权信息**等。
 
 此外，也可以通过 iam-operating-system 调用 iam-apiserver 服务来做些运营管理工作。比如，以上帝视角查看某个用户的授权策略供排障使用，或者调整用户可创建密钥的最大个数，再或者通过白名单的方式，让某个用户不受密钥个数限制的影响等等。
 
@@ -147,21 +147,83 @@ sudo go install github.com/golang/protobuf/protoc-gen-go@v1.5.2
 
 ## 3 项目部署：如何快速部署IAM系统？
 
-了解 IAM 项目一个最直接有效的方式就是去部署和使用它。
+了解 IAM 项目一个最直接有效的方式就是去**部署和使用**它。
 
-### 下载iam项目代码
-
-
-
-### 安装和配置数据库
+### 3.1 下载iam项目代码
 
 
 
-### 安装和配置IAM系统
+### 3.2 安装和配置数据库
+
+#### 安装和配置 MariaDB
 
 
 
-### 安装man文件
+macos
+
+```sh
+```
+
+
+
+mysql和Mariadb在同一个系统有些冲突，暂时使用mysql
+
+
+
+#### 安装和配置 Redis
+
+
+
+#### 安装和配置 MongoDB
+
+
+
+### 3.3 安装和配置IAM系统
+
+#### 准备工作
+
+第 1 步，初始化 MariaDB 数据库，创建 iam 数据库。
+第 2 步，配置 scripts/install/environment.sh。
+第 3 步，创建需要的目录。
+第 4 步， 创建 CA 根证书和密钥。
+第 5 步，配置 hosts。
+
+#### 安装和配置 iam-apiserver
+
+第 1 步，创建 iam-apiserver 证书和私钥。
+第 2 步，安装并运行 iam-apiserver。
+第 3 步，测试 iam-apiserver 是否成功安装。
+用户 CURD
+密钥 CURD
+
+授权策略 CURD
+
+#### 安装 iamctl
+
+第 1 步，创建 iamctl 证书和私钥。
+第 2 步，安装 iamctl。
+第 3 步，测试 iamctl 是否成功安装。
+
+#### 安装和配置 iam-authz-server
+
+第 1 步，创建 iam-authz-server 证书和私钥。
+第 2 步，安装并运行 iam-authz-server。
+第 3 步，测试 iam-authz-server 是否成功安装。
+
+#### 安装和配置 iam-pump
+
+第 1 步，安装 iam-pump 可执行程序。
+第 2 步，生成并安装 iam-pump 的配置文件（iam-pump.yaml）。
+第 3 步，创建并安装 iam-pump systemd unit 文件。
+第 4 步，启动 iam-pump 服务。
+第 5 步，测试 iam-pump 是否成功安装。
+
+### 3.4 安装man文件
+
+
+第 1 步，生成各个组件的 man1 文件。
+第 2 步，安装生成的 man1 文件。
+第 3 步，检查是否成功安装 man1 文件。
 
 
 
@@ -178,7 +240,7 @@ sudo go install github.com/golang/protobuf/protoc-gen-go@v1.5.2
 
 ### 4.1 哪些地方需要制定规范
 
-- 非编码类规范，主要包括开源规范、文档规范、版本规范、Commit 规范和发布规范。
+- 非编码类规范，主要包括开源规范、文档规范、版本规范、Commit规范和发布规范。
 - 编码类规范，则主要包括目录规范、代码规范、接口规范、日志规范和错误码规范。
 
 ![](images/image-20240718193907063.png)
@@ -201,17 +263,17 @@ sudo go install github.com/golang/protobuf/protoc-gen-go@v1.5.2
 
 - 第二，要确保整个代码库和提交记录中，不能出现**内部IP、内部域名、密码、密钥**这类信息。否则，就会造成**敏感信息**外漏，可能会对我们的内部业务造成安全隐患。
 
-- 第三，当我们的开源项目被别的开发者提交 pull request、issue、评论时，要**及时处理**，一方面可以确保项目不断被更新，另一方面也可以激发其他开发者贡献代码的积极性。
+- 第三，当我们的开源项目被别的开发者提交pull request、issue、评论时，要**及时处理**，一方面可以确保项目不断被更新，另一方面也可以激发其他开发者贡献代码的积极性。
 
-- 第四，好的开源项目，应该能够**持续地更新功能，修复Bug**。对于一些已经结项、不维护的开源项目，需要及时地对项目进行归档，并在项目描述中加以说明。
+- 第四，好的开源项目，应该能够**持续地更新功能，修复Bug**。对于一些已经结项、不维护的开源项目，需要及时地对项目进行**归档**，并**在项目描述中加以说明**。
 
 [开源规范详细列表](https://github.com/marmotedu/geekbang-go/blob/master/开源规范详细列表.md)
 
 > 提醒：
 >
-> 第一件，如果有条件，你可以宣传、运营开源项目，让更多的人知道、使用、贡献代码。比如，你可以在掘金、简书等平台发表文章，也可以创建 QQ、微信交流群等，都是不错的方式。
+> - 第一件，如果有条件，你可以宣传、运营开源项目，让更多的人知道、使用、贡献代码。比如，你可以在掘金、简书等平台发表文章，也可以创建 QQ、微信交流群等，都是不错的方式。
 >
-> 第二件，如果你英文好、有时间，文档最好有中英文 2 份，优先使用英文，让来自全球的开发者都能了解、使用和参与你的项目。
+> - 第二件，如果你英文好、有时间，文档最好有中英文 2 份，优先使用英文，让来自全球的开发者都能了解、使用和参与你的项目。
 
 ### 4.3 文档规范
 
@@ -279,7 +341,7 @@ README模板:
 
 项目文档包括一切**需要文档化的内容**，通常集中放在`/docs`目录下。
 
-好的文档规范有 2 个优点：易读和可以快速定位文档。
+好的文档规范有2个优点：**易读和可以快速定位文档**。
 
 不同项目有不同的文档需求，在制定文档规范时，你可以考虑包含两类文档。
 
@@ -430,7 +492,7 @@ docs
 - `feat` 类型的 commit 可以将次版本号+1。
 - 带有 `BREAKING CHANGE` 的 commit 可以将主版本号+1。
 
-## 5 规范设计（下）：commit 信息风格迥异、难以阅读，如何规范？
+## 5 规范设计（下）：commit信息风格迥异、难以阅读，如何规范？
 
 好的 Commit Message作用：
 
