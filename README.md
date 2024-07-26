@@ -494,22 +494,22 @@ docs
 
 ## 5 规范设计（下）：commit信息风格迥异、难以阅读，如何规范？
 
-好的 Commit Message作用：
+好的Commit Message作用：
 
-- **清晰地知道每个 commit 的变更内容**。
--  **进行过滤查找**，比如只查找某个版本新增的功能：`git log --oneline --grep "^feat|^fix|^perf"`。
-- 基于规范化的 Commit Message **生成 Change Log**。
-- 依据某些类型的 Commit Message **触发构建或者发布流程**，比如当 type 类型为 feat、fix 时才触发 CI 流程。
+- **清晰地知道每个commit的变更内容**。
+- **进行过滤查找**，比如只查找某个版本新增的功能：`git log --oneline --grep "^feat|^fix|^perf"`。
+- 基于规范化的Commit Message**生成Change Log**。
+- 依据某些类型的Commit Message触发构建或者发布流程**，比如当 type 类型为 feat、fix 时才触发 CI 流程。
 
-- **确定语义化版本的版本号**。比如 `fix` 类型可以映射为 PATCH 版本，`feat` 类型可以映射为 MINOR 版本。带有 `BREAKING CHANGE` 的 commit，可以映射为 MAJOR 版本。
+- **确定语义化版本的版本号**。比如`fix`类型可以映射为 PATCH 版本，`feat` 类型可以映射为 MINOR 版本。带有 `BREAKING CHANGE` 的 commit，可以映射为 MAJOR 版本。
 
 ### 5.1 Commit Message的规范有哪些？
 
-社区有多种 Commit Message 的规范，例如 jQuery、Angular 等：
+社区有多种 Commit Message 的规范，例如 jQuery、Angular等：
 
 ![](images/c090bd82c2d14631bc26ccaa52276d0e.jpg)
 
-**[Angular](https://github.com/angular/angular)规范**在功能上能够满足开发者 commit 需求，在格式上清晰易读，目前也是用得最多的。
+**[Angular](https://github.com/angular/angular)规范**在功能上能够满足开发者commit需求，在格式上清晰易读，目前也是用得最多的。
 
 ![](images/image-20240719111435758.png)
 
@@ -540,11 +540,11 @@ type主要可以归为两类：
 - **Development**：这类修改一般是**项目管理类的变更**，不会影响最终用户和生产环境的代码，比如 CI 流程、构建方式等的修改。遇到这类修改，通常也意味着可以免测发布。
 - **Production**：这类修改会影响最终的用户和生产环境的代码。所以对于这种改动，我们一定要慎重，并在提交前做好充分的测试。
 
-在做 Code Review 时，如果遇到 Production 类型的代码，一定要认真 Review，因为这种类型，会影响到现网用户的使用和现网应用的功能。
+在做Code Review时，如果遇到 Production 类型的代码，一定要认真 Review，因为这种类型，会影响到现网用户的使用和现网应用的功能。
 
 ![](images/efc195aa75ee43a78626dc06ff2dfaa4.jpg)
 
-如何确定一个 commit 所属的 type 呢？
+> 如何确定一个 commit 所属的 type 呢？
 
 ![](images/4aaa87fb06924e9380f3e1d28aac124b.jpg)
 
@@ -552,14 +552,14 @@ type主要可以归为两类：
 
 > **一定要保证一个项目中的 type 类型一致。**
 
-scope 是用来说明 commit 的**影响范围**的，必须是**名词**。显然，不同项目会有不同的 scope。在项目初期，我们可以设置一些**粒度**比较大的 scope，比如可以按**组件名或者功能**来设置 scope；后续，如果项目有变动或者有新功能，我们可以再用追加的方式添加新的 scope。
+scope 是用来说明 commit 的**影响范围**的，必须是**名词**。显然，不同项目会有不同的 scope。在项目初期，可以设置一些**粒度**比较大的 scope，比如可以按**组件名或者功能**来设置 scope；后续，如果项目有变动或者有新功能，我们可以再用追加的方式添加新的 scope。
 
 例如，本项目主要是根据组件名和功能来设置的：apiserver、authzserver、user等。
 
 | scope       | description                            |
 | ----------- | -------------------------------------- |
-| apiserver   | iam-apiserver 组件相关的变更           |
-| authzserver | iam-auth-server 组件相关的变更         |
+| apiserver   | iam-apiserver组件相关的变更            |
+| authzserver | iam-auth-server组件相关的变更          |
 | pump        | iam-pump 组件相关的变更                |
 | iamctl      | iamctl 组件相关的变更                  |
 | user        | iam-apiserver 中 user 模块相关的变更   |
@@ -572,7 +572,7 @@ scope 是用来说明 commit 的**影响范围**的，必须是**名词**。显�
 
 **scope 不适合设置太具体的值**。
 
-subject 是 commit 的**简短描述**，必须以**动词开头、使用现在时**。比如，我们可以用 change，却不能用 changed 或 changes，而且这个动词的第一个字母必须是**小写**。通过这个动词，我们可以明确地知道 commit 所执行的操作。此外subject 的结尾**不能加英文句号**。
+**subject** 是 commit 的**简短描述**，必须以**动词开头、使用现在时**。比如，可以用 change，却不能用 changed 或 changes，而且这个动词的第一个字母必须是**小写**。通过这个动词，可以明确地知道 commit 所执行的操作。此外subject 的结尾**不能加英文句号**。
 
 #### Body
 
@@ -582,9 +582,9 @@ subject 是 commit 的**简短描述**，必须以**动词开头、使用现在�
 
 #### Footer
 
-主要用来说明本次 commit 导致的后果。
+主要用来说明本次commit导致的后果。
 
-在实际应用中，Footer通常用来说明**不兼容的改动和关闭的Issue列表**，格式如下：
+在实际应用中，Footer通常用来**说明不兼容的改动和关闭的Issue列表**，格式如下：
 
 ```
 BREAKING CHANGE: <breaking change summary>
@@ -639,15 +639,24 @@ This reverts commit 079360c7cfc830ea8a6e13f4c8b8114febc9b48a.
 
 > 为了更好地遵循Angular规范，建议在提交代码时养成不用 `git commit -m`，即不用-m 选项的习惯，而是直接用 `git commit` 或者 `git commit -a` 进入交互界面编辑 Commit Message。这样可以更好地格式化 Commit Message。
 
-### 5.2 Commit相关的3个重要内容 🔖
+### 5.2 Commit相关的3个重要内容
 
 #### 1️⃣提交频率
 
+个人项目随意commit影响不大，但如果是多人开发的项目，随意 commit 不仅会让 Commit Message 变得难以理解，还会让其他研发同事觉得你不专业。
 
+> 什么时候进行 commit 最好呢？
+
+两种情况：
+
+- 一种情况是，只要我对项目进行了修改，一通过测试就立即 commit。比如修复完一个 bug、开发完一个小功能，或者开发完一个完整的功能，测试通过后就提交。
+- 另一种情况是，规定一个时间，定期提交。这里建议代码下班前固定提交一次，并且要确保本地未提交的代码，延期不超过 1 天。这样，如果本地代码丢失，可以尽可能减少丢失的代码量。
 
 可以在最后合并代码或者提交 Pull Request 前，执行 `git rebase -i` 合并之前的所有 commit。
 
-#### 2️⃣合并提交
+#### 2️⃣合并提交 🔖
+
+合并提交，就是将多个 commit 合并为一个 commit 提交。
 
 - git rebase命令介绍
 
@@ -669,18 +678,33 @@ git rebase支持的变更操作如下：
 
 - 合并提交操作示例
 
-#### 3️⃣修改Commit Message
+#### 3️⃣修改Commit Message 🔖
 
-- git commit –amend：修改最近一次 commit 的 message
-- git rebase -i：修改某次 commit 的 message
+- `git commit –amend`：修改最近一次 commit 的 message
+- `git rebase -i`：修改某次 commit 的 message
 
 
 
-### 5.3 Commit Message规范自动化
+### 5.3 Commit Message规范自动化 🔖
 
 Commit Message 规范如果靠文档去约束，就会严重依赖开发者的代码素养，并不能真正保证提交的 commit 是符合规范的。
 
 ![](images/image-20240719122805028.png)
+
+这些自动化功能可以分为以下 2 类：
+
+- Commit Message 生成和检查功能：生成符合 Angular 规范的 Commit Message、Commit Message 提交前检查、历史 Commit Message 检查。
+- 基于 Commit Message 自动生成 CHANGELOG 和 SemVer 的工具。
+
+下面这 5 个工具自动的完成上面的功能：
+
+- [commitizen-go](https://github.com/lintingzhen/commitizen-go)：使你进入交互模式，并根据提示生成 Commit Message，然后提交。
+- commit-msg：githooks，在 commit-msg 中，指定检查的规则，commit-msg 是个脚本，可以根据需要自己写脚本实现。这门课的 commit-msg 调用了 go-gitlint 来进行检查。
+- [go-gitlint](https://github.com/llorllale/go-gitlint)：检查历史提交的 Commit Message 是否符合 Angular 规范，可以将该工具添加在 CI 流程中，确保 Commit Message 都是符合规范的。
+- [gsemver](https://github.com/arnaud-deprez/gsemver)：语义化版本自动生成工具。
+- [git-chglog](https://github.com/git-chglog/git-chglog)：根据 Commit Message 生成 CHANGELOG。
+
+
 
 
 
@@ -694,8 +718,8 @@ Commit Message 规范如果靠文档去约束，就会严重依赖开发者的�
 
 一个好的目录结构至少要满足以下几个要求:
 
-- **命名清晰**：目录命名要清晰、简洁，不要太长，也不要太短，目录名要能清晰地表达出该目录实现的功能，并且目录名最好用单数。一方面是因为单数足以说明这个目录的功能，另一方面可以统一规范，避免单复混用的情况。
-- **功能明确**：一个目录所要实现的功能应该是明确的、并且在整个项目目录中具有很高的辨识度。也就是说，当需要新增一个功能时，我们能够非常清楚地知道把这个功能放在哪个目录下。
+- **命名清晰**：目录命名要清晰、简洁，不要太长，也不要太短，目录名要能清晰地表达出该目录实现的功能，并且目录名最好用==单数==。一方面是因为单数足以说明这个目录的功能，另一方面可以统一规范，避免单复混用的情况。
+- **功能明确**：一个目录所要实现的功能应该是明确的、并且在整个项目目录中具有很高的辨识度。也就是说，**当需要新增一个功能时，我们能够非常清楚地知道把这个功能放在哪个目录下。**
 - **全面性**：目录结构应该尽可能全面地包含研发过程中需要的功能，例如文档、脚本、源码管理、API 实现、工具、第三方包、测试、编译产物等。
 - **可观测性**：项目规模一定是从小到大的，所以一个好的目录结构应该能够在项目变大时，仍然保持之前的目录结构。
 - **可扩展性**：每个目录下存放了同类的功能，在项目变大时，这些目录应该可以存放更多同类功能。
@@ -717,12 +741,12 @@ Commit Message 规范如果靠文档去约束，就会严重依赖开发者的�
 - 项目介绍：README.md。
 - 客户端：xxxctl。
 - API 文档。
-- 构建配置文件，CICD 配置文件。
+- 构建配置文件，CICD配置文件。
 - CHANGELOG。
 - 项目配置文件。
-- kubernetes 部署定义文件（未来容器化是趋势，甚至会成为服务部署的事实标准，所以目录结构中需要有存放 kubernetes 定义文件的目录）。
-- Dockerfile 文件。
-- systemd/init 部署配置文件（物理机/虚拟机部署方式需要）。
+- kubernetes部署定义文件（未来容器化是趋势，甚至会成为服务部署的事实标准，所以目录结构中需要有存放 kubernetes 定义文件的目录）。
+- Dockerfile文件。
+- systemd/init部署配置文件（物理机/虚拟机部署方式需要）。
 - 项目文档。
 - commit message 格式检查或者其他 githook。
 - 请求参数校验。
@@ -733,7 +757,7 @@ Commit Message 规范如果靠文档去约束，就会严重依赖开发者的�
 - storage 接口。
 - 项目管理：Makefile，完成代码检查、构建、打包、测试、部署等。
 - 版权声明。
-- _output 目录（编译、构建产物）。
+- _output目录（编译、构建产物）。
 - 引用的第三方包。
 - 脚本文件（可能会借助脚本，实现一些源码管理、构建、生成等功能）。
 - 测试文件。
@@ -832,11 +856,9 @@ Commit Message 规范如果靠文档去约束，就会严重依赖开发者的�
 
 
 
-一个Go项目包含3大部分：**Go应用 、项目管理和文档**。所以，我们的项目目录也可以分为这3大类。同时，Go 应用又贯穿开发阶段、测试阶段和部署阶段，相应的应用类的目录，又可以按开发流程分为更小的子类。
+一个Go项目包含3大部分：**==Go应用、项目管理和文档==**。所以，我们的项目目录也可以分为这3大类。同时，Go应用又贯穿开发阶段、测试阶段和部署阶段，相应的应用类的目录，又可以按开发流程分为更小的子类。
 
 ![](images/image-20240719124916890.png)
-
-
 
 #### Go应用：主要存放前后端代码
 
@@ -893,7 +915,7 @@ if the importing code is outside the tree rooted at the parent of the
 可以通过 Go 语言本身的机制来约束其他项目 import 项目内部的包。`/internal` 目录建议包含如下目录：
 
 - /internal/apiserver：该目录中存放真实的应用代码。这些应用的共享代码存放在`/internal/pkg` 目录下。
-- /internal/pkg：存放项目内可共享，项目外不共享的包。这些包提供了比较基础、通用的功能，例如工具、错误码、用户验证等功能。
+- /internal/pkg：存放**项目内可共享**，项目外不共享的包。这些包提供了比较基础、通用的功能，例如工具、错误码、用户验证等功能。
 
 建议：一开始将所有的共享代码存放在/`internal/pkg` 目录下，当该共享代码做好了对外开发的准备后，再转存到`/pkg`目录下。
 
@@ -959,13 +981,13 @@ internal/
 
 项目依赖，可通过 `go mod vendor` 创建。需要注意的是，如果是一个 Go 库，不要提交 vendor 依赖包。
 
-`/third_party`
+##### `/third_party`
 
 外部帮助工具，分支代码或其他第三方应用（例如Swagger UI）。比如我们 fork 了一个第三方 go 包，并做了一些小的改动，我们可以放在目录/third_party/forked 下。一方面可以很清楚的知道该包是 fork 第三方的，另一方面又能够方便地和upstream同步。
 
 #### Go应用：主要存放测试相关的文件和代码
 
-`/test`
+##### `/test`
 
 用于存放其他外部测试应用和测试数据。/test 目录的构建方式比较灵活：对于大的项目，有一个数据子目录是有意义的。例如，如果需要 Go 忽略该目录中的内容，可以使用/test/data 或/test/testdata 目录。
 
@@ -1137,9 +1159,9 @@ $ ls -A build/ci/
 
 一个企业级项目是由多人合作完成的，不同开发者在本地开发完代码之后，可能提交到同一个代码仓库，同一个开发者也可能同时开发几个功能特性。这种多人合作开发、多功能并行开发的特性如果处理不好，就会带来诸如丢失代码、合错代码、代码冲突等问题。
 
-在使用 Git 开发时，有4种常用的==工作流==（也叫==开发模式==），按演进顺序分为集中式工作流、功能分支工作流、Git Flow 工作流和Forking 工作流。
+在使用Git开发时，有4种常用的==工作流==（也叫==开发模式==），按演进顺序分为集中式工作流、功能分支工作流、Git Flow 工作流和Forking 工作流。
 
-### 集中式工作流
+### 7.1 集中式工作流
 
 ![](images/image-20240719153840574.png)
 
@@ -1151,7 +1173,7 @@ A、B、C 为 3 位开发者，每位开发者都在本地有一份远程仓库�
 
 集中式工作流程适合用在**团队人数少、开发不频繁、不需要同时维护多个版本的小项目**中。
 
-### 功能分支工作流
+### 7.2 功能分支工作流
 
 功能分支工作流基于集中式工作流演进而来。在开发新功能时，基于 master 分支新建一个功能分支，在功能分支上进行开发，而不是直接在本地的 master 分支开发，开发完成之后合并到 master 分支，如下图所示：
 
@@ -1204,7 +1226,7 @@ $ git push origin feature/rate-limiting
 
 > “Merge pull request” 提供了 3 种 merge 方法：
 >
-> - **Create a merge commit：**GitHub 的底层操作是 `git merge --no-ff`。feature 分支上所有的 commit 都会加到 master 分支上，并且会生成一个 merge commit。这种方式可以让我们清晰地知道是谁做了提交，做了哪些提交，回溯历史的时候也会更加方便。
+> - **Create a merge commit：**GitHub 的底层操作是 `git merge --no-ff`。feature分支上所有的commit都会加到master分支上，并且会生成一个 merge commit。这种方式可以让我们清晰地知道是谁做了提交，做了哪些提交，回溯历史的时候也会更加方便。
 > - **Squash and merge**：GitHub 的底层操作是 `git merge --squash`。**Squash and merge**会使该 pull request 上的所有 commit 都合并成一个commit ，然后加到master分支上，但原来的 commit 历史会丢失。如果开发人员在 feature 分支上提交的 commit 非常随意，没有规范，那么我们可以选择这种方法来丢弃无意义的 commit。但是在大型项目中，每个开发人员都应该是遵循 commit 规范的，因此我不建议你在团队开发中使用 Squash and merge。
 > - **Rebase and merge：**GitHub 的底层操作是 `git rebase`。这种方式会将 pull request 上的所有提交历史按照原有顺序依次添加到 master 分支的头部（HEAD）。因为git rebase 有风险，在你不完全熟悉 Git 工作流时，我不建议merge时选择这个。
 >
@@ -1214,7 +1236,7 @@ $ git push origin feature/rate-limiting
 
 当然它也有缺点，就是**无法给分支分配明确的目的，不利于团队配合**。它适合用在**开发团队相对固定、规模较小的项目**中。
 
-### Git Flow工作流
+### 7.3 Git Flow工作流
 
 Git Flow工作流是一个非常成熟的方案，也是==非开源项目==中最常用到的工作流。它定义了一个围绕项目发布的严格分支模型，通过为代码开发、发布和维护分配独立的分支来让项目的迭代流程更加顺畅，**比较适合大型的项目或者迭代速度快的项目。**
 
@@ -1222,21 +1244,171 @@ Git Flow工作流是一个非常成熟的方案，也是==非开源项目==中�
 
 master、develop、feature、release和 hotfix
 
-其中，master 和 develop 为常驻分支，其他为非常驻分支，不同的研发阶段会用到不同的分支。
+其中，master和develop为常驻分支，其他为非常驻分支，不同的研发阶段会用到不同的分支。
 
 | 分支名  | 描述                                                         |
 | ------- | ------------------------------------------------------------ |
 | master  | 该分支上的最新代码永远是发布状态，不能直接在该分支上开发。master 分支每合并一个 hotfx/release 分支，都会打一个版本标签 |
-| develop | 该分支上的代码是开发中的最新代码，该分支只做合井操作，不能直接在该分支上开发 |
-| feature | 在研发阶段用来做功能开发。一个新功能会基于 develop 分支新建一个 feature 分支，分支名建议命名为： feature/xxxx-xxx。功能开发完成之后，会合并到 develop 分支并删除。这里有一点需要你注意，feature 分支在申请合并之前，最好是先 pull 一下 develop 分支，看一下有没有冲突，如果有就先解决冲突后再申请合并 |
-| release | 在发布阶段用作版本发布的预发布分支，基于 develop 分支创建，分支名建议命名为：release/xxxx-XxX。 例如：v1.0.0 版本的功能全部开发测试完成后，提交到 develop 分支，然后基于 develop 分支创建release/1.0.0分支，并提交测试，测试中遇到的问题在 release 分支修改。最终通过测试后，将 release 分支合并到 master 和 develop，并在 master 分支打上v1.0.0 的版本标签，最后删除 release/1.0.0分支 |
-| hotfix  | 在维护阶段用作紧急 bug 修复分支，在 master 分支上创建，修复完成后合并到 master。分支名建议命名为hotfx/xxxx-xxx。例如：当线上某个版本出现 Bug 后，从 master 检出对应版本的代码，创建 hothx 分支，并在 hothx 分支修复问题。问题修复后，将 hothx 分支合并到 master 和 develop分支，并在 master 分支打上修复后的版本标签，最后删除 hotfix 分支 |
+| develop | 该分支上的代码是开发中的最新代码，该分支**只做合井操作**，不能直接在该分支上开发 |
+| feature | 在研发阶段用来做功能开发。一个新功能会基于 develop 分支新建一个 feature 分支，分支名建议命名为： `feature/xxxx-xxx`。功能开发完成之后，会合并到 develop 分支并删除。这里有一点需要你注意，feature 分支在申请合并之前，最好是先 pull 一下 develop 分支，看一下有没有冲突，如果有就先解决冲突后再申请合并 |
+| release | 在发布阶段用作版本发布的预发布分支，基于 develop 分支创建，分支名建议命名为：`release/xxxx-xxx`。 例如：v1.0.0 版本的功能全部开发测试完成后，提交到 develop 分支，然后基于 develop 分支创建release/1.0.0分支，并提交测试，测试中遇到的问题在 release 分支修改。最终通过测试后，将 release 分支合并到 master 和 develop，并在 master 分支打上v1.0.0 的版本标签，最后删除 release/1.0.0分支 |
+| hotfix  | 在维护阶段用作紧急bug修复分支，在master分支上创建，修复完成后合并到 master。分支名建议命名为`hotfx/xxxx-xxx`。例如：当线上某个版本出现 Bug 后，从 master 检出对应版本的代码，创建 hothx 分支，并在 hothx 分支修复问题。问题修复后，将 hothx 分支合并到 master 和 develop分支，并在 master 分支打上修复后的版本标签，最后删除 hotfix 分支 |
 
-#### Git Flow开发流程 🔖
+#### Git Flow开发流程
+
+> 场景：
+>
+> - Git 项目名为 gitflow-demo，项目目录下有 2 个文件，分别是 README.md 和 main.go，main.go内容为：
+>
+> ```go
+> package main
+> 
+> import "fmt"
+> 
+> func main() {
+> 	fmt.Println("callmainfunction")
+> }
+> ```
+>
+> - 当前版本为：0.9.0。
+> - 需要新开发一个功能，使程序执行时向标准输出输出“hello world”字符串。
+> - 在开发阶段，线上代码有 Bug 需要紧急修复。
+
+具体的开发流程:
+
+1. 创建一个常驻的分支：`develop`。
+
+```sh
+$ git checkout -b develop master
+```
+
+2. 基于 develop 分支，新建一个功能分支：`feature/print-hello-world`。
+
+```sh
+git checkout -b feature/print-hello-world develop
+```
+
+3. feature/print-hello-world 分支中，在 main.go 文件中添加一行代码`fmt.Println("Hello")`，添加后的代码如下。
+
+```go
+package main
+
+import "fmt"
+
+func main() {
+	fmt.Println("callmainfunction")
+	fmt.Println("Hello")
+}
+```
+
+4. 紧急修复线上Bug。
+
+我们正处在新功能的开发中（只完成了 `fmt.Println("Hello")`而非 `fmt.Println("Hello World")`）突然线上代码发现了一个 Bug，我们要立即停止手上的工作，修复线上的 Bug，步骤如下。
+
+```sh
+$ git stash 	# 1. 开发工作只完成了一半，还不想提交，可以临时保存修改至堆栈区
+$ git checkout -b hotfix/print-error master 	# 2. 从 master 建立 hotfix 分支
+$ vi main.go 	# 3. 修复 bug，callmainfunction -> call main function
+$ git commit -a -m 'fix print message error bug' 	# 4. 提交修复
+$ git checkout develop 	# 5. 切换到 develop 分支
+$ git merge --no-ff hotfix/print-error 	# 6. 把 hotfix 分支合并到 develop 分支
+$ git checkout master 	# 7. 切换到 master 分支
+$ git merge --no-ff hotfix/print-error 	# 8. 把 hotfix 分支合并到 master
+$ git tag -a v0.9.1 -m "fix log bug" 	# 9. master 分支打 tag
+$ go build -v . 	# 10. 编译代码，并将编译好的二进制更新到生产环境
+$ git branch -d hotfix/print-error 	# 11. 修复好后，删除 hotfix/xxx 分支
+$ git checkout feature/print-hello-world 	# 12. 切换到开发分支下
+$ git merge --no-ff develop 	# 13. 因为 develop 有更新，这里最好同步更新下
+$ git stash pop 	# 14. 恢复到修复前的工作状态
+```
+
+5. 继续开发。
+
+在 main.go 中加入 `fmt.Println("Hello World")`。
+
+6. 提交代码到 feature/print-hello-world 分支。
+
+```sh
+$ git commit -a -m "print 'hello world'"
+```
+
+7. 在 feature/print-hello-world 分支上做 code review。
+
+首先，我们需要将 feature/print-hello-world push 到代码托管平台，例如 GitHub 上。
+
+```sh
+$ git push origin feature/print-hello-world
+```
+
+然后，我们在 GitHub 上，基于 feature/print-hello-world 创建 pull request，如下图所示。
+
+![](images/187c56f73f914cadae1de3c42181e97b.jpg)
+
+创建完 pull request 之后，我们就可以指定 Reviewers 进行 code review，如下图所示。
+
+![](images/iShot_2024-07-26_21.36.42.png)
+
+8. code review 通过后，由代码仓库 matainer 将功能分支合并到 develop 分支。
+
+```sh
+$ git checkout develop
+$ git merge --no-ff feature/print-hello-world
+```
+
+9. 基于 develop 分支，创建 release 分支，测试代码。
+
+```sh
+$ git checkout -b release/1.0.0 develop
+$ go build -v . # 构建后，部署二进制文件，并测试
+```
+
+10. 测试失败，因为我们要求打印“hello world”，但打印的是“Hello World”，修复的时候，
+
+直接在 release/1.0.0 分支修改代码，修改完成后，提交并编译部署。
+
+```sh
+$ git commit -a -m "fix bug"
+$ go build -v .
+```
+
+11. 测试通过后，将功能分支合并到 master 分支和 develop 分支。
+
+```sh
+$ git checkout develop
+$ git merge --no-ff release/1.0.0
+$ git checkout master
+$ git merge --no-ff release/1.0.0
+$ git tag -a v1.0.0 -m "add print hello world" # master 分支打 tag
+```
+
+12. 删除 feature/print-hello-world 分支，也可以选择性删除 release/1.0.0 分支。
+
+```sh
+$ git branch -d feature/print-hello-world
+```
 
 
 
-### Forking工作流
+> ```sh
+> # 删除远程分支:
+> git push origin -d feature/print-hello-world
+> # 查看本地和远程分支
+> git branch -a
+> 
+> # 推送本地标签
+> git push origin --tags
+> ```
+
+
+
+Git Flow工作流：
+
+- 缺点是有一定的上手难度。
+- 优点的：Git Flow工作流的每个分支分工明确，这可以最大程度减少它们之间的相互影响。因为可以创建多个分支，所以也可以并行开发多个功能。另外，和功能分支工作流一样，它也可以添加code review，保障代码质量。
+
+因此，Git Flow工作流比较**适合开发团队相对固定，规模较大的项目**。
+
+### 7.4 Forking工作流
 
 在开源项目中，最常用到的是Forking 工作流，例如 Kubernetes、Docker 等项目用的就是这种工作流。
 
@@ -1253,9 +1425,9 @@ fork 操作是在个人远程仓库新建一份目标远程仓库的副本，比
 | 工作流          | 优点                                                         | 缺点                                       | 使用场景                                                     |
 | --------------- | ------------------------------------------------------------ | ------------------------------------------ | ------------------------------------------------------------ |
 | 集中式工作流    | 上手最简单                                                   | 代码管理较混乱，容易出问                   | 团队人数少，开发不频繁，不需要同时维护多个版本的小项目       |
-| 功能分支 工作流 | 上手比较简单，支持并行 开发，支持Code Review                 | 无法给分支分配明确的目的，不利于团队配合   | 开发团队相对固定、规模较小的项目                             |
-| Git Flow 工作流 | 每个分支分工明确，这可以最大程度减少它们之间的相互影响，可以并行开发，支持Code Review | 一定的上手难度                             | 比较适合开发团队相对固定，规模较大的项目                     |
-| ForkingI 作流   | 完全解耦个人远端仓库和项目远端仓库，最大程度上保证远端仓库的安全 | 对于职能分工明确且不对外开源的项目优势不大 | 比较适用于开源项目中，或者开发者有衍生出自己的衍生版的需求，或者开发者不固定，可能是任意一个能访问到项目的开发者 |
+| 功能分支 工作流 | 上手比较简单，支持并行开发，支持Code Review                  | 无法给分支分配明确的目的，不利于团队配合   | 开发团队相对固定、规模较小的项目                             |
+| Git Flow工作流  | 每个分支分工明确，这可以最大程度减少它们之间的相互影响，可以并行开发，支持Code Review | 一定的上手难度                             | 比较适合开发团队相对固定，规模较大的项目                     |
+| Forking工作流   | 完全解耦个人远端仓库和项目远端仓库，最大程度上保证远端仓库的安全 | 对于职能分工明确且不对外开源的项目优势不大 | 比较适用于开源项目中，或者开发者有衍生出自己的衍生版的需求，或者开发者不固定，可能是任意一个能访问到项目的开发者 |
 
 
 
