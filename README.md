@@ -9,9 +9,124 @@ ron-iam
 
 
 
-Go一些核心优势：语言简单、语言层面支持并发编程、跨平台编译和自带垃圾回收机制等。
 
-Go是云时代的语言。
+
+
+
+## 0 开篇词-从0开始搭建一个企业级Go应用
+
+### “云”是大势所趋，而Go是云时代的语言
+
+- Go语言本身核心优势：语言简单、语言层面支持并发编程、跨平台编译和自带垃圾回收机制等。
+- 随着云计算平台的逐渐成熟，应用上云已经成为一个不可逆转的趋势了。而云目前是朝着云原生架构的方向演进的，云原生架构中具有统治力（影响力）的项目绝大部分又是用 Go 构建的。
+
+### 学习Go项目开发面临哪些问题？
+
+> 比如说，有个开发者写的代码依赖数据库连接，没法写单元测试。细问之后，我发现他参考的文章没有将数据库层跟业务层通过接口解耦。
+>
+> 再比如说，还有一些开发者开发的项目很难维护，项目中出现了大量的 common、util、const 这类 Go 包。只看包名，我完全不知道包所实现的功能，问了之后才发现他是参考了一个带有 dao、model、controller、service 目录的、不符合 Go 设计哲学的项目。
+
+总的来说，四类问题：
+
+1.  **知识盲区**：Go 项目开发会涉及很多知识点，但自己对这些知识点却一无所知。想要学习，却发现网上很多文章结构混乱、讲解不透彻。想要搜索一遍优秀的文章，又要花费很多时间，劳神劳力。
+2.  **学不到最佳实践，能力提升有限**：网上有很多文章会介绍 Go 项目的构建方法，但很多都不是最佳实践，学完之后不能在能力和认知上带来最佳提升，还要自己花时间整理学习，事倍功半。
+3.  **不知道如何完整地开发一个Go项目**：学了很多 Go 开发相关的知识点、构建方法，但都不体系、不全面、不深入。学完之后，自己并不能把它们有机结合成一个 Go 项目研发体系，真正开发的时候还是一团乱，效率也很低。
+4.  **缺乏一线项目练手，很难检验学习效果**：为了避免闭门造车，我们肯定想学习一线大厂的大型项目构建和研发经验，来检验自己的学习成果，但自己平时又很难接触到，没有这样的学习途径。
+
+### Go项目开发中大部分技能点
+
+```
+实战准备
+		开发环境搭建
+		实战项目搭建
+设计阶段
+		规范设计
+			开源规范
+			日志规范
+			目录规范
+			错误规范
+			代码规范
+			接口规范
+			版本规范
+			文档规范
+			Commit规范
+		代码目录结构设计
+		开发流程设计
+		Git工作流程设计
+开发阶段
+		应用功能
+			Go SDK
+			异步数据处理
+			命令行工具
+			API服务
+		常用功能
+			日志包设计
+			错误包设计
+			错误码设计
+			应架构建  🔖
+			常用软件包
+			数据库
+			...
+		应用管理
+			Makefile
+			编译
+			镜像制作
+			单元测试
+			版权声明
+			代码生成
+			代码格式化
+			CA证书制作
+			Swagger文档
+			静态代码检查
+			工具安装
+			...
+		Web服务
+			RESTful
+			gRPC
+			参数解析
+			JSON
+			Protobuf
+			参数校验
+			路由
+			中间件
+			逻辑处理
+			RequestID
+			跨域
+			返回结果
+			HTTP/HTTPS
+			优雅关停
+			认证/授权
+			...
+测试阶段
+		单元测试
+    性能测试
+    性能分析
+    覆盖率
+    Mock
+    SQLMock
+    ...
+部署阶段
+    裸金属部署
+    容器化部署
+    服务编排
+    CICD
+    ---
+    高可用
+    负载均衡
+    弹性伸缩
+    安全
+    Nginx
+    ...
+Tips
+    缓存服务设计
+    Cache机制设计
+    Go面试指南
+    ...
+```
+
+
+
+
 
 
 
@@ -19,7 +134,7 @@ Go是云时代的语言。
 
 ### 1.1 为什么选择IAM系统作为实战项目？
 
-Go项目开发时，绕不开的一个话题是安全，如何保证Go应用的安全？
+Go项目开发时，绕不开的一个话题是安全，**如何保证Go应用的安全？**
 
 Go应用的安全大体上分为2类：
 
@@ -50,10 +165,11 @@ Go应用的安全大体上分为2类：
 3.  因为IAM通过授权策略完成授权，所以用户需要在IAM中创建**授权策略**。
 4.  请求IAM提供的授权接口，IAM会根据用户的**请求内容和授权策略**来决定一个授权请求是否被允许。
 
-在上面的流程中，IAM使用到了3种系统资源：用户（User）、密钥（Secret）和策略（Policy），映射到程序设计中就是3种RESTful资源：
-•  ==用户（User）==：实现对用户的增、删、改、查、修改密码、批量修改等操作。
-•  ==密钥（Secret）==：实现对密钥的增、删、改、查操作。
-•  ==策略（Policy）==：实现对策略的增、删、改、查、批量删除操作。
+在上面的流程中，IAM使用到了3种==系统资源==：用户（User）、密钥（Secret）和策略（Policy），映射到程序设计中就是3种RESTful资源：
+
+- ==用户（User）==：实现对用户的增、删、改、查、修改密码、批量修改等操作。
+- ==密钥（Secret）==：实现对密钥的增、删、改、查操作。
+- ==策略（Policy）==：实现对策略的增、删、改、查、批量删除操作。 
 
 ### 1.3 IAM系统的架构
 
@@ -75,7 +191,7 @@ Go应用的安全大体上分为2类：
 
 用户可以通过请求 ==iam-authz-server== 提供的 /v1/authz 接口进行**资源授权**，请求/v1/authz 接口需要通过密钥认证，认证通过后 /v1/authz 接口会查询授权策略，从而决定资源请求是否被允许。为了提高 /v1/authz 接口的性能，iam-authz-server 将密钥和策略信息缓存在内存中，以便实现快速查询。
 
-那密钥和策略信息是如何实现缓存的呢？
+<u>那密钥和策略信息是如何实现缓存的呢？</u>
 
 首先，iam-authz-server 通过调用 iam-apiserver 提供的 gRPC 接口，将密钥和授权策略信息缓存到内存中。同时，为了使内存中的缓存信息和 iam-apiserver 中的信息保持一致，当 iam-apiserver 中有密钥或策略被更新时，iam-apiserver 会往特定的 **Redis Channel**（iam-authz-server 也会订阅该 Channel）中发送`PolicyChanged` 和 `SecretChanged` 消息。这样一来，当 iam-authz-server 监听到有新消息时就会获取并解析消息，根据消息内容判断是否需要重新调用 gRPC 接来获取密钥和授权策略信息，再更新到内存中。
 
@@ -83,11 +199,11 @@ Go应用的安全大体上分为2类：
 
 iam-authz-server 会将授权日志上报到 Redis 高速缓存中，然后==iam-pump==组件会异步消费这些授权日志，再把清理后的数据保存在MongoDB中，供运营系统 ==iam-operating-system== 查询。
 
-> 注意：iam-authz-server 将授权日志保存在 Redis 高性能 key-value 数据库中，可以最大化减少写入延时。不保存在内存中是因为授权日志量我们没法预测，当授权日志量很大时，很可能会将内存耗尽，造成服务中断。
+> 注意：iam-authz-server将授权日志保存在Redis高性能key-value数据库中，可以最大化减少写入延时。不保存在内存中是因为授权日志量我们没法预测，当授权日志量很大时，很可能会将内存耗尽，造成服务中断。
 
 4. 运营平台授权数据展示。
 
-iam-operating-system 是IAM的运营系统，它可以通过查询MongoDB获取并展示运营数据，比如某个用户的**授权/失败次数、授权失败时的授权信息**等。
+iam-operating-system 是IAM的**运营系统**，它可以通过查询MongoDB获取并展示运营数据，比如某个用户的**授权/失败次数、授权失败时的授权信息**等。
 
 此外，也可以通过 iam-operating-system 调用 iam-apiserver 服务来做些运营管理工作。比如，以上帝视角查看某个用户的授权策略供排障使用，或者调整用户可创建密钥的最大个数，再或者通过白名单的方式，让某个用户不受密钥个数限制的影响等等。
 
@@ -105,13 +221,23 @@ IAM的运营系统 iam-operating-system
 
 ![](images/image-20240714003504732.png)
 
+采用了前后端分离架构之后，当你通过浏览器请求前端 ops-webconsole 时，ops-webconsole 会先请求**静态文件服务器**加载静态文件，比如 HTML、CSS 和 JavaScript，然后它会执行 JavaScript，通过**负载均衡**请求后端数据，最后把后端返回的数据渲染到前端页面中。
+
+采用前后端分离的架构，让前后端通过RESTful API通信，会带来以下5点好处：
+
+- 可以让前、后端人员各自专注在自己业务的功能开发上，让专业的人做专业的事，来提高代码质量和开发效率
+- 前后端可并行开发和发布，这也能提高开发和发布效率，加快产品迭代速度
+- 前后端组件、代码分开，职责分明，可以增加代码的维护性和可读性，减少代码改动引起的 Bug 概率，同时也能快速定位 Bug
+- 前端JavaScript可以处理后台的数据，减少对后台服务器的压力
+- 可根据需要选择性水平扩容前端或者后端来节约成
+
 ##### MVC架构
 
 如果运营系统功能比较少，采用前后端分离框架的弊反而大于利，比如前后端分离要同时维护 2 个组件会导致部署更复杂，并且前后端分离将人员也分开了，这会增加一定程度的**沟通成本**。同时，因为代码中也需要实现前后端交互的逻辑，所以会引入一定的开发量。
 
 ![](images/image-20240714003714458.png)
 
-
+MVC架构的好处是**通过控制器层将视图层和模型层分离之后，当更改视图层代码后时，就不需要重新编译控制器层和模型层的代码了**。
 
 ## 2 环境准备：如何安装和配置一个基本的Go开发环境？
 
@@ -123,7 +249,67 @@ IAM的运营系统 iam-operating-system
 
 10.211.55.6
 
+- **第一步，用Root 用户登录Linux 系统，并创建普通用户。**
+
+```sh
+```
+
+
+
+- **第二步，添加 sudoers。**
+
+```sh
+sed -i '/^root.*ALL=(ALL).*ALL/a\going\tALL=(ALL) \tALL' /etc/sudoers
+```
+
+
+
 #### 2.2 依赖安装和配置
+
+##### 安装依赖
+
+```sh
+sudo yum -y install make autoconf automake cmake perl-CPAN libcurl-devel libtool gcc gcc-c++ glibc-headers zlib-devel git-lfs telnet lrzsz jq expat-devel openssl-devel
+```
+
+
+
+##### 安装Git
+
+```sh
+$ cd /tmp
+$ wget --no-check-certificate https://mirrors.edge.kernel.org/pub/software/scm/git/git-2.36.1.tar.gz
+$ tar -xvzf git-2.36.1.tar.gz
+$ cd git-2.36.1/
+$ ./configure
+$ make
+$ sudo make install
+$ git --version          # 输出 git 版本号，说明安装成功
+git version 2.36.1
+```
+
+
+
+配置Git
+
+```sh
+git config --global user.name "Andy Ron"    
+git config --global user.email "randy.njfu@gmail.com"    
+git config --global credential.helper store    # 设置 Git，保存用户名和密码
+git config --global core.longpaths true # 解决 Git 中 'Filename too long' 的错误
+```
+
+在 Git 中，我们会把非 ASCII 字符叫做 Unusual 字符。这类字符在 Git 输出到终端的时候默认是用 8 进制转义字符输出的（以防乱码），但现在的终端多数都支持直接显示非 ASCII 字符，所以我们可以关闭掉这个特性：
+
+```
+git config --global core.quotepath off
+```
+
+```
+git lfs install --skip-repo
+```
+
+
 
 
 
@@ -131,14 +317,59 @@ IAM的运营系统 iam-operating-system
 
 
 
-ProtoBuf 编译环境安装：
+```
+wget -P /tmp/ https://golang.google.cn/dl/go1.25.0.linux-arm64.tar.gz
+```
+
+```
+mkdir -p $HOME/go
+tar -xvzf /tmp/go1.25.0.linux-arm64.tar.gz -C $HOME/go
+mv $HOME/go/go $HOME/go/go1.25.0
+```
+
+```
+tee -a $HOME/.bashrc <<'EOF'
+# Go envs
+export GOVERSION=go1.25.0 # Go 版本设置
+export GO_INSTALL_DIR=$HOME/go # Go 安装目录
+export GOROOT=$GO_INSTALL_DIR/$GOVERSION # GOROOT 设置
+export GOPATH=$WORKSPACE/golang # GOPATH 设置
+export PATH=$GOROOT/bin:$GOPATH/bin:$PATH # 将 Go 语言自带的和通过 go install 安装的二进制文件加入到 PATH 路径中
+export GO111MODULE="on" # 开启 Go moudles 特性
+export GOPROXY=https://goproxy.cn,direct # 安装 Go 模块时，代理服务器设置
+export GOPRIVATE=
+export GOSUMDB=off # 关闭校验 Go 依赖包的哈希值
+EOF
+```
+
+
+
+
+
+##### ProtoBuf编译环境安装
 
 - 安装protobuf的编译器 protoc
+
+macOS
 
 ```sh
 brew install protobuf
 
 protoc --version
+```
+
+Linux
+
+```sh
+cd /tmp/
+git clone -b v3.21.1 --depth=1 https://github.com/protocolbuffers/protobuf
+cd protobuf
+./autogen.sh
+./configure
+make
+sudo make install
+protoc --version # 查看 protoc 版本，成功输出版本号，说明安装成功
+libprotoc 3.21.1
 ```
 
 - 安装protoc-gen-go
@@ -151,9 +382,32 @@ sudo go install github.com/golang/protobuf/protoc-gen-go@v1.5.2
 
 
 
-#### 2.4 Go开发IDE安装和配置 🔖
+#### 2.4 Go开发IDE安装和配置 
 
-vim-go 
+##### 安装vim-go 
+
+```
+mkdir -p ~/.vim/pack/plugins/start/
+git clone --depth=1 https://github.com/fatih/vim-go.git ~/.vim/pack/plugins/start/vim-go
+```
+
+##### Go 工具安装
+
+vim-go 会用到一些 Go 工具，比如在函数跳转时会用到 guru、godef 工具，在格式化时会用到 goimports，所以你也需要安装这些工具。安装方式如下：
+
+执行 `vi /tmp/test.go`，
+
+然后输入 `:GoInstallBinaries` 安装 vim-go 需要的工具。
+
+> 升级go 
+>
+> ```
+> wget -P /tmp/ https://golang.google.cn/dl/go1.25.0.linux-arm64.tar.gz
+> ```
+>
+> 
+
+
 
 
 
